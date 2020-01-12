@@ -120,7 +120,7 @@ public class MyGameGUI implements Serializable{
                 maxY = Math.max(n.getLocation().y(),maxY);
                 minX = Math.min(n.getLocation().x(),minX);
                 minY = Math.min(n.getLocation().y(),minY);
-                System.out.println(minX + " " + maxX);
+//                System.out.println(minX + " " + maxX);
                 StdDraw.setPenColor(Color.blue);
                 StdDraw.setPenRadius(0.04);
                 StdDraw.point(n.getLocation().x(), n.getLocation().y());
@@ -161,7 +161,9 @@ public class MyGameGUI implements Serializable{
         StdDraw.enableDoubleBuffering();
         StdDraw.clear(Color.white);
         StdDraw.picture((minX+maxX)/2,(minY+maxY)/2,"/Users/amichaihadad/Desktop/Ariel/שנה ב סמסטר א/מונחה עצמים/OOP_Ex3/docs/A5.png");
-        List<String> log = game.move();
+        List<String> log = game.getRobots();
+        addFrut();
+        update();
         if (log != null) {
             long t = game.timeToEnd();
             for (int i = 0; i < log.size(); i++) {
@@ -176,19 +178,21 @@ public class MyGameGUI implements Serializable{
                     Point3D position = new Point3D(Double.parseDouble(pos3D[0]), Double.parseDouble(pos3D[1]));
                     StdDraw.setPenRadius(0.04);
                     //StdDraw.setPenColor(StdDraw.GREEN);
-
+                    double dtx = maxX-minX;
+                    double dty = maxY-minY;
+                    StdDraw.text(minX+dtx/2,maxY-dty/10,"Time left: "+t/1000+"."+t%1000);
                     if (robotId == 0) {
-                        StdDraw.picture(position.x(), position.y(), "robot0.jpg", 0.001, 0.001);
+                        StdDraw.picture(position.x(), position.y(), "robot0.jpg", 0.0004, 0.0004);
                     } else if (robotId == 1) {
-                        StdDraw.picture(position.x(), position.y(), "robot1.jpg", 0.001, 0.001);
+                        StdDraw.picture(position.x(), position.y(), "robot1.jpg", 0.0004, 0.0004);
                     } else if (robotId == 2) {
-                        StdDraw.picture(position.x(), position.y(), "robot2.jpg", 0.001, 0.001);
+                        StdDraw.picture(position.x(), position.y(), "robot2.jpg", 0.0004, 0.0004);
 
                     } else if (robotId == 3) {
-                        StdDraw.picture(position.x(), position.y(), "robot3.jpg", 0.001, 0.001);
+                        StdDraw.picture(position.x(), position.y(), "robot3.jpg", 0.001, 0.0004);
 
                     } else if (robotId == 4) {
-                        StdDraw.picture(position.x(), position.y(), "robot4.jpg", 0.001, 0.001);
+                        StdDraw.picture(position.x(), position.y(), "robot4.jpg", 0.0004, 0.0004);
 
                     }
 
@@ -198,8 +202,8 @@ public class MyGameGUI implements Serializable{
                 }
             }
         }
-            addFrut();
-            update();
+//            addFrut();
+//            update();
             StdDraw.show();
 
     }
