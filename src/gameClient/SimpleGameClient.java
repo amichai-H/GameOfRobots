@@ -104,7 +104,6 @@ public class SimpleGameClient {
 		// should be a Thread!!!
 		while (game.isRunning()) {
 			moveRobots(game, gg, myg);
-			System.out.println("Wowllll");
 		}
 		String results = game.toString();
 		JOptionPane.showMessageDialog(f, "Game Over: " + results);
@@ -136,6 +135,17 @@ public class SimpleGameClient {
 
 					if (dest == -1) {
 						dest = nextNode(gg, src, rid,game);
+						int r = (int)(Math.random()*2)+1;
+						if (dest== -1|| r==2){
+							dest = goCloser(gg, src, rid,game);
+							r = (int)(Math.random()*3)+1;
+						}
+						if (dest == -1||r==3||src==2){
+							dest = randomedge(gg, src);
+						}
+						if (dest==-1){
+							dest = randomedge(gg, src);
+						}
 						game.chooseNextEdge(rid, dest);
 						System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));
 						System.out.println(ttt);
@@ -145,6 +155,36 @@ public class SimpleGameClient {
 				}
 			}
 		}
+	}
+
+	private static int goCloser(graph g, int src, int rid, game_service game) {
+		Graph_Algo graph_algo = new Graph_Algo(g);
+		Fruits fruts = new Fruits(game,g);
+		Robots robots = new Robots(game,g);
+		Robot r = robots.getRobot(rid);
+		Fruit fruit = fruts.getCloseF(r.getLocation());
+		edge_data edgedata = fruts.getEdge(fruit.getId());
+		if (edgedata.getDest()==src)
+			return edgedata.getSrc();
+		if (edgedata.getSrc()==src)
+			return edgedata.getDest();
+		if (fruit.getType() == -1) {
+
+			return graph_algo.shortestPath(src, edgedata.getDest()).get(1).getKey();
+		} else return graph_algo.shortestPath(src, edgedata.getSrc()).get(1).getKey();
+
+	}
+
+	private static int randomedge(graph g, int src) {
+		int ans = -1;
+		Collection<edge_data> ee = g.getE(src);
+		Iterator<edge_data> itr = ee.iterator();
+		int s = ee.size();
+		int r = (int)(Math.random()*s);
+		int i=0;
+		while(i<r) {itr.next();i++;}
+		ans = itr.next().getDest();
+		return ans;
 	}
 
 	/**
@@ -176,18 +216,20 @@ public class SimpleGameClient {
 		Robot current = robots.getRobot(rid);
 		Fruit max = fruts.getMaxValue();
 		edge_data eData = fruts.getEdge(max.getId());
-		if (eData.getDest()==src){
-			return graph_algo.shortestPath(src,eData.getSrc()).get(1).getKey();
-		}
-		if (eData.getSrc()==src){
-			return graph_algo.shortestPath(src,eData.getDest()).get(1).getKey();
-		}
-		if (max.getType()==-1){
+		if (eData!=null) {
+			if (eData.getDest() == src) {
+				return eData.getSrc();
+			}
+			if (eData.getSrc() == src) {
+				return eData.getDest();
+			}
+			if (max.getType() == -1) {
 
-			return graph_algo.shortestPath(src,eData.getDest()).get(1).getKey();
-		}else return graph_algo.shortestPath(src,eData.getSrc()).get(1).getKey();
+				return graph_algo.shortestPath(src, eData.getDest()).get(1).getKey();
+			} else return graph_algo.shortestPath(src, eData.getSrc()).get(1).getKey();
+		}
 
-		//return -1;
+		return -1;
 
 	}
 

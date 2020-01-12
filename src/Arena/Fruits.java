@@ -60,7 +60,7 @@ public class Fruits {
                 node_data srcN = graph.getNode(src);
                 node_data desN = graph.getNode(des);
                 Point3D middle = new Point3D((srcN.getLocation().x()+desN.getLocation().x())*0.5,(srcN.getLocation().y()+desN.getLocation().y())*0.5);
-                if (middle.distance2D(current.getPosition())<0.001){
+                if (middle.distance2D(current.getPosition())<0.0007){
                     return tempE;
                 }
             }
@@ -99,5 +99,21 @@ public class Fruits {
             return max;
         }
         return null;
+    }
+    public Fruit getCloseF(Point3D p){
+        Iterator<Fruit> fruitIterator = iterator();
+        if (fruitIterator.hasNext()) {
+            Fruit close = fruitIterator.next();
+            while (fruitIterator.hasNext()) {
+
+                    Fruit temp = fruitIterator.next();
+                if (close.getPosition().distance2D(p)>temp.getPosition().distance2D(p)){
+                    close = temp;
+                }
+            }
+            return close;
+        }
+        return null;
+
     }
 }

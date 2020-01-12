@@ -160,7 +160,7 @@ public class MyGameGUI implements Serializable{
     public void robotWalk() {
         StdDraw.enableDoubleBuffering();
         StdDraw.clear(Color.white);
-        StdDraw.picture((minX+maxX)/2,(minY+maxY)/2,"/Users/amichaihadad/Desktop/Ariel/שנה ב סמסטר א/מונחה עצמים/OOP_Ex3/docs/A5.png");
+        StdDraw.picture((minX+maxX)/2,(minY+maxY)/2,"Backround.png");
         List<String> log = game.getRobots();
         addFrut();
         update();
@@ -180,9 +180,10 @@ public class MyGameGUI implements Serializable{
                     //StdDraw.setPenColor(StdDraw.GREEN);
                     double dtx = maxX-minX;
                     double dty = maxY-minY;
+                    StdDraw.setPenColor(Color.red);
                     StdDraw.text(minX+dtx/2,maxY-dty/10,"Time left: "+t/1000+"."+t%1000);
                     if (robotId == 0) {
-                        StdDraw.picture(position.x(), position.y(), "robot0.jpg", 0.0004, 0.0004);
+                        StdDraw.picture(position.x(), position.y(), "robotP.png", 0.0006, 0.0006);
                     } else if (robotId == 1) {
                         StdDraw.picture(position.x(), position.y(), "robot1.jpg", 0.0004, 0.0004);
                     } else if (robotId == 2) {
@@ -220,10 +221,10 @@ public class MyGameGUI implements Serializable{
                 String pos3D[] = pos.split(",");
                 Point3D position = new Point3D(Double.parseDouble(pos3D[0]),Double.parseDouble(pos3D[1]));
                 if (type==-1) {
-                    StdDraw.picture(position.x(), position.y(), "banan.jpg", 0.001, 0.001);
+                    StdDraw.picture(position.x(), position.y(), "robotH.png", 0.001, 0.001);
                 }
                 else{
-                    StdDraw.picture(position.x(), position.y(), "apple.jpg", 0.003, 0.001);
+                    StdDraw.picture(position.x(), position.y(), "fruitH.png", 0.001, 0.001);
 
                 }
 
