@@ -59,8 +59,14 @@ public class Fruits {
                 int des = tempE.getDest();
                 node_data srcN = graph.getNode(src);
                 node_data desN = graph.getNode(des);
-                Point3D middle = new Point3D((srcN.getLocation().x()+desN.getLocation().x())*0.5,(srcN.getLocation().y()+desN.getLocation().y())*0.5);
-                if (middle.distance2D(current.getPosition())<0.0007){
+//              Point3D middle = new Point3D((srcN.getLocation().x()*0.5+desN.getLocation().x()*0.5),(srcN.getLocation().y()*0.5+desN.getLocation().y()*0.5));
+//                if (middle.distance2D(current.getPosition())<0.002){
+//                    return tempE;
+//                }
+
+                double distanceA = srcN.getLocation().distance2D(current.getPosition())+current.getPosition().distance2D(desN.getLocation());
+                double distanceB = srcN.getLocation().distance2D(desN.getLocation());
+                if(Math.abs(distanceA-distanceB)<=0.00007){
                     return tempE;
                 }
             }

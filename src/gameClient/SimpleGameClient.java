@@ -93,7 +93,10 @@ public class SimpleGameClient {
 					}
 				}
 				else {
-					src_node=a;
+					Robots rr = new Robots(game,gg);
+					Fruits ff = new Fruits(game,gg);
+
+					src_node=findStart(gg,game)+a;
 				}
 				game.addRobot(src_node);
 			}
@@ -102,14 +105,35 @@ public class SimpleGameClient {
 		}
 		game.startGame();
 		// should be a Thread!!!
-		while (game.isRunning()) {
-			moveRobots(game, gg, myg);
+		try {
+
+			while (game.isRunning()) {
+				moveRobots(game, gg, myg);
+			}
+		}catch (Exception e){
+			while (game.isRunning()) {
+				moveRobots(game, gg, myg);
+			}
 		}
 		String results = game.toString();
 		JOptionPane.showMessageDialog(f, "Game Over: " + results);
 
 		System.out.println("Game Over: " + results);
 		exit(1);
+	}
+
+	private static int findStart(DGraph gg, game_service game) {
+		Graph_Algo graph_algo = new Graph_Algo(gg);
+		Fruits fruts = new Fruits(game,gg);
+		Fruit max = fruts.getMaxValue();
+		edge_data eData = fruts.getEdge(max.getId());
+		if (eData!=null) {
+			if (max.getType() == -1) {
+				return eData.getSrc();
+			} else
+				return eData.getDest();
+
+		}else return 0;
 	}
 
 	/**
@@ -123,7 +147,7 @@ public class SimpleGameClient {
 	private static void moveRobots(game_service game, graph gg, MyGameGUI myGameGUI) {
 		List<String> log = game.move();
 		if (log != null) {
-			long t = game.timeToEnd();
+			//long t = game.timeToEnd();
 			for (int i = 0; i < log.size(); i++) {
 				String robot_json = log.get(i);
 				try {
@@ -132,22 +156,24 @@ public class SimpleGameClient {
 					int rid = ttt.getInt("id");
 					int src = ttt.getInt("src");
 					int dest = ttt.getInt("dest");
+					int speed = ttt.getInt("speed");
 
 					if (dest == -1) {
 						dest = nextNode(gg, src, rid,game);
-						int r = (int)(Math.random()*2)+1;
-						if (dest== -1|| r==2){
+						int r = (int)(Math.random()*10)+1;
+						System.out.println("hfgdftghfdhjkjhgfdghjkfghd45ui"+dest);
+						if (dest== -1|| r==2||speed>3){
 							dest = goCloser(gg, src, rid,game);
-							r = (int)(Math.random()*3)+1;
+							System.out.println("hfgdftghfdhjkjhgfdghjkfghd45ui"+dest);
 						}
-						if (dest == -1||r==3||src==2){
-							dest = randomedge(gg, src);
+						if (dest == -1){
+							dest = randomedge(gg, src,rid);
 						}
 						if (dest==-1){
-							dest = randomedge(gg, src);
+							dest = randomedge(gg, src,rid);
 						}
 						game.chooseNextEdge(rid, dest);
-						System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));
+						//System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));
 						System.out.println(ttt);
 					}
 				} catch (JSONException e) {
@@ -164,6 +190,9 @@ public class SimpleGameClient {
 		Robot r = robots.getRobot(rid);
 		Fruit fruit = fruts.getCloseF(r.getLocation());
 		edge_data edgedata = fruts.getEdge(fruit.getId());
+		if (edgedata==null){
+			return -1;
+		}
 		if (edgedata.getDest()==src)
 			return edgedata.getSrc();
 		if (edgedata.getSrc()==src)
@@ -175,16 +204,42 @@ public class SimpleGameClient {
 
 	}
 
-	private static int randomedge(graph g, int src) {
+	private static int randomedge(graph g, int src,int rid) {
+//		int ans = -1;
+//		Collection<edge_data> ee = g.getE(src);
+//		Iterator<edge_data> itr = ee.iterator();
+//		int s = ee.size();
+//		int r = (int)(Math.random()*s);
+//		int i=0;
+//		while(i<r) {itr.next();i++;}
+//		ans = itr.next().getDest();
+//		return ans;
 		int ans = -1;
-		Collection<edge_data> ee = g.getE(src);
-		Iterator<edge_data> itr = ee.iterator();
-		int s = ee.size();
-		int r = (int)(Math.random()*s);
-		int i=0;
-		while(i<r) {itr.next();i++;}
-		ans = itr.next().getDest();
-		return ans;
+		Graph_Algo graph_algo = new Graph_Algo(g);
+
+		Iterator<node_data> temp = g.getV().iterator();
+		ArrayList<Integer> showChoices = new ArrayList<>();
+		while (temp.hasNext()){
+			showChoices.add(temp.next().getKey());
+		}
+		Collection<node_data> ev = g.getV();
+			myway[rid] = new ArrayDeque<>();
+			int r = (int)(Math.random()*ev.size());
+			Iterator<node_data> temp2 = graph_algo.shortestPath(src,showChoices.get(r)).iterator();
+			while (temp2.hasNext()) {
+				myway[rid].add(temp2.next().getKey());
+		}
+		//
+		if (myway[rid]==null||myway[rid].isEmpty()){
+			return -1;
+		}
+		ans = myway[rid].poll();
+		try {
+			return graph_algo.shortestPath(src,showChoices.get(r)).get(1).getKey();
+		}
+		catch (Exception e){
+			return -1;
+		}
 	}
 
 	/**
@@ -205,15 +260,15 @@ public class SimpleGameClient {
 			return -1;
 		}
 		else {
-			return findNextNode(g,game,rid,src);
+			return findNextNode(g,game,src);
 		}
 	}
 
-	private static int findNextNode(graph g, game_service game,int rid,int src) {
+	private static int findNextNode(graph g, game_service game,int src) {
 		Graph_Algo graph_algo = new Graph_Algo(g);
 		Fruits fruts = new Fruits(game,g);
-		Robots robots = new Robots(game,g);
-		Robot current = robots.getRobot(rid);
+		//Robots robots = new Robots(game,g);
+		//Robot current = robots.getRobot(rid);
 		Fruit max = fruts.getMaxValue();
 		edge_data eData = fruts.getEdge(max.getId());
 		if (eData!=null) {

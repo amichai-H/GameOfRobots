@@ -165,41 +165,43 @@ public class MyGameGUI implements Serializable{
         addFrut();
         update();
         if (log != null) {
-            long t = game.timeToEnd();
-            for (int i = 0; i < log.size(); i++) {
-                String robot_json = log.get(i);
-                try {
-                    JSONObject line1 = new JSONObject(robot_json);
-                    System.out.println(line1);
-                    JSONObject robot = line1.getJSONObject("Robot");
-                    int robotId = robot.getInt("id");
-                    String pos = robot.getString("pos");
-                    String pos3D[] = pos.split(",");
-                    Point3D position = new Point3D(Double.parseDouble(pos3D[0]), Double.parseDouble(pos3D[1]));
-                    StdDraw.setPenRadius(0.04);
-                    //StdDraw.setPenColor(StdDraw.GREEN);
-                    double dtx = maxX-minX;
-                    double dty = maxY-minY;
-                    StdDraw.setPenColor(Color.red);
-                    StdDraw.text(minX+dtx/2,maxY-dty/10,"Time left: "+t/1000+"."+t%1000);
-                    if (robotId == 0) {
-                        StdDraw.picture(position.x(), position.y(), "robotP.png", 0.0006, 0.0006);
-                    } else if (robotId == 1) {
-                        StdDraw.picture(position.x(), position.y(), "robot1.jpg", 0.0004, 0.0004);
-                    } else if (robotId == 2) {
-                        StdDraw.picture(position.x(), position.y(), "robot2.jpg", 0.0004, 0.0004);
+            if (game.isRunning()) {
+                long t = game.timeToEnd();
+                for (int i = 0; i < log.size(); i++) {
+                    String robot_json = log.get(i);
+                    try {
+                        JSONObject line1 = new JSONObject(robot_json);
+                        System.out.println(line1);
+                        JSONObject robot = line1.getJSONObject("Robot");
+                        int robotId = robot.getInt("id");
+                        String pos = robot.getString("pos");
+                        String pos3D[] = pos.split(",");
+                        Point3D position = new Point3D(Double.parseDouble(pos3D[0]), Double.parseDouble(pos3D[1]));
+                        StdDraw.setPenRadius(0.04);
+                        //StdDraw.setPenColor(StdDraw.GREEN);
+                        double dtx = maxX - minX;
+                        double dty = maxY - minY;
+                        StdDraw.setPenColor(Color.red);
+                        StdDraw.text(minX + dtx / 2, maxY - dty / 10, "Time left: " + t / 1000 + "." + t % 1000);
+                        if (robotId == 0) {
+                            StdDraw.picture(position.x(), position.y(), "robotP.png", 0.0006, 0.0006);
+                        } else if (robotId == 1) {
+                            StdDraw.picture(position.x(), position.y(), "robot1.jpg", 0.0004, 0.0004);
+                        } else if (robotId == 2) {
+                            StdDraw.picture(position.x(), position.y(), "robot2.jpg", 0.0004, 0.0004);
 
-                    } else if (robotId == 3) {
-                        StdDraw.picture(position.x(), position.y(), "robot3.jpg", 0.001, 0.0004);
+                        } else if (robotId == 3) {
+                            StdDraw.picture(position.x(), position.y(), "robot3.jpg", 0.001, 0.0004);
 
-                    } else if (robotId == 4) {
-                        StdDraw.picture(position.x(), position.y(), "robot4.jpg", 0.0004, 0.0004);
+                        } else if (robotId == 4) {
+                            StdDraw.picture(position.x(), position.y(), "robot4.jpg", 0.0004, 0.0004);
+
+                        }
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
 
                     }
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-
                 }
             }
         }
