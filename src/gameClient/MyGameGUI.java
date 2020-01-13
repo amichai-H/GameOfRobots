@@ -89,7 +89,7 @@ public class MyGameGUI implements Serializable{
         draw(1200,800,new Range(minX,maxX),new Range(minY,maxY));
         Timer timer = new Timer();
         if (!inAction)
-            timer.schedule(new Active(this), 100, 1);
+            timer.schedule(new Active(this), 70, 1);
 
     }
 
@@ -171,7 +171,6 @@ public class MyGameGUI implements Serializable{
                     String robot_json = log.get(i);
                     try {
                         JSONObject line1 = new JSONObject(robot_json);
-                        System.out.println(line1);
                         JSONObject robot = line1.getJSONObject("Robot");
                         int robotId = robot.getInt("id");
                         String pos = robot.getString("pos");
@@ -181,12 +180,16 @@ public class MyGameGUI implements Serializable{
                         //StdDraw.setPenColor(StdDraw.GREEN);
                         double dtx = maxX - minX;
                         double dty = maxY - minY;
-                        StdDraw.setPenColor(Color.red);
-                        StdDraw.text(minX + dtx / 2, maxY - dty / 10, "Time left: " + t / 1000 + "." + t % 1000);
+                        StdDraw.picture(minX + dtx / 2,maxY - dty / 10, "headelin.png");
+                        Font font = new Font("Arial", Font.BOLD, 20);
+                        StdDraw.setFont(font);
+                        StdDraw.setPenColor(Color.BLACK);
+                        StdDraw.text(minX + dtx / 2, maxY - dty / 10, "Time left: " + t / 1000 + "." + t % 1000) ;
+                        StdDraw.setFont();
                         if (robotId == 0) {
                             StdDraw.picture(position.x(), position.y(), "robotP.png", 0.0006, 0.0006);
                         } else if (robotId == 1) {
-                            StdDraw.picture(position.x(), position.y(), "robot1.jpg", 0.0004, 0.0004);
+                            StdDraw.picture(position.x(), position.y(), "robot1.png", 0.0004, 0.0004);
                         } else if (robotId == 2) {
                             StdDraw.picture(position.x(), position.y(), "robot2.jpg", 0.0004, 0.0004);
 
@@ -215,7 +218,6 @@ public class MyGameGUI implements Serializable{
         while (f_iter.hasNext()){
             try {
                 JSONObject line1 = new JSONObject(f_iter.next());
-                System.out.println(line1);
                 JSONObject frut = line1.getJSONObject("Fruit");
                 double value = frut.getDouble("value");
                 String pos = frut.getString("pos");
@@ -226,7 +228,7 @@ public class MyGameGUI implements Serializable{
                     StdDraw.picture(position.x(), position.y(), "robotH.png", 0.001, 0.001);
                 }
                 else{
-                    StdDraw.picture(position.x(), position.y(), "fruitH.png", 0.001, 0.001);
+                    StdDraw.picture(position.x(), position.y(), "fruitH.png", 0.002, 0.001);
 
                 }
 

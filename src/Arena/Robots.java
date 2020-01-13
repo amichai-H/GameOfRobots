@@ -24,7 +24,6 @@ public class Robots {
                 String robot_json = log.get(i);
                 try {
                     JSONObject line1 = new JSONObject(robot_json);
-                    System.out.println(line1);
                     JSONObject robot = line1.getJSONObject("Robot");
                     int robotId = robot.getInt("id");
                     String pos = robot.getString("pos");

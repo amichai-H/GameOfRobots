@@ -1,6 +1,8 @@
 package Arena;
 
 import Server.game_service;
+import algorithms.Graph_Algo;
+import dataStructure.Edata;
 import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.node_data;
@@ -24,7 +26,6 @@ public class Fruits {
         while (f_iter.hasNext()){
             try {
                 JSONObject line1 = new JSONObject(f_iter.next());
-                System.out.println(line1);
                 JSONObject frut = line1.getJSONObject("Fruit");
                 double value = frut.getDouble("value");
                 String pos = frut.getString("pos");
@@ -59,14 +60,15 @@ public class Fruits {
                 int des = tempE.getDest();
                 node_data srcN = graph.getNode(src);
                 node_data desN = graph.getNode(des);
-//              Point3D middle = new Point3D((srcN.getLocation().x()*0.5+desN.getLocation().x()*0.5),(srcN.getLocation().y()*0.5+desN.getLocation().y()*0.5));
+              Point3D middle = new Point3D((srcN.getLocation().x()*0.5+desN.getLocation().x()*0.5),(srcN.getLocation().y()*0.5+desN.getLocation().y()*0.5));
 //                if (middle.distance2D(current.getPosition())<0.002){
 //                    return tempE;
 //                }
 
                 double distanceA = srcN.getLocation().distance2D(current.getPosition())+current.getPosition().distance2D(desN.getLocation());
                 double distanceB = srcN.getLocation().distance2D(desN.getLocation());
-                if(Math.abs(distanceA-distanceB)<=0.00007){
+                //middle.distance2D(current.getPosition())<0.001
+                if(Math.abs(distanceA-distanceB)<=0.00001){
                     return tempE;
                 }
             }
@@ -106,17 +108,55 @@ public class Fruits {
         }
         return null;
     }
-    public Fruit getCloseF(Point3D p){
+     public Fruit geMinValue() {
+        Iterator<Fruit> fruitIterator = iterator();
+        if (fruitIterator.hasNext()) {
+            Fruit min = fruitIterator.next();
+
+            while (!min.isTaken()&&fruitIterator.hasNext()){
+                min = fruitIterator.next();
+            }
+            while (fruitIterator.hasNext()){
+                Fruit temp = fruitIterator.next();
+
+                if(min.getValue()>temp.getValue()&&!temp.isTaken()){
+                    min = temp;
+                }
+            }
+            min.take();
+            return min;
+        }
+        return null;
+    }
+
+    public Fruit getCloseF(int src){
+        node_data nnode = graph.getNode(src);
+        Graph_Algo graph_algo = new Graph_Algo(graph);
+        Point3D p = nnode.getLocation();
         Iterator<Fruit> fruitIterator = iterator();
         if (fruitIterator.hasNext()) {
             Fruit close = fruitIterator.next();
+//            while (!close.isTaken()&&fruitIterator.hasNext()){
+//                close = fruitIterator.next();
+//            }
+            edge_data closeE = getEdge(close.getId());
             while (fruitIterator.hasNext()) {
-
                     Fruit temp = fruitIterator.next();
-                if (close.getPosition().distance2D(p)>temp.getPosition().distance2D(p)){
-                    close = temp;
-                }
+                    edge_data etepm = getEdge(temp.getId());
+                    try {
+                        if (graph_algo.shortestPathDist(src,closeE.getDest())>graph_algo.shortestPathDist(src,etepm.getDest())){
+                            close = temp;
+                        }
+
+                    }catch (Exception e){
+                        if (close.getPosition().distance2D(p)>temp.getPosition().distance2D(p)){
+                            close=temp;
+                        }
+
+                    }
+
             }
+            close.take();
             return close;
         }
         return null;
