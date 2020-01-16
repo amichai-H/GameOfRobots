@@ -1,6 +1,11 @@
 package gameClient;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import Arena.Fruit;
@@ -103,30 +108,171 @@ public class SimpleGameClient {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		game.startGame();
-		// should be a Thread!!!
 		try {
-			time= game.timeToEnd();
-			Fruits fruits =  new Fruits(game,gg);
 
-			while (game.isRunning()) {
-				moveRobots(game, gg, myg,fruits);
+
+			File file = new File("game " + scenario_num + "log" + new Date().getTime() + ".kml");
+
+//Create the file
+			if (file.createNewFile()) {
+				System.out.println("File is created!");
+			} else {
+				System.out.println("File already exists.");
 			}
+
+//Write Content
+			FileWriter writer = new FileWriter(file);
+			writeheader(writer);
+			writeGraph(writer,gg);
+
+			game.startGame();
+			Long l = game.timeToEnd();
+			// should be a Thread!!!
+			try {
+				time = game.timeToEnd();
+				Fruits fruits = new Fruits(game, gg);
+
+				while (game.isRunning()) {
+					if (l-game.timeToEnd()>300L) {
+						writeMyRnF(writer, gg, game);
+						l=game.timeToEnd();
+					}
+					moveRobots(game, gg, myg, fruits);
+
+
+
+				}
+
+			} catch (Exception e) {
+				Fruits fruits = new Fruits(game, gg);
+				while (game.isRunning()) {
+					moveRobots(game, gg, myg, fruits);
+				}
+			}
+			closeKML(writer);
+
 		} catch (Exception e) {
-			Fruits fruits =  new Fruits(game,gg);
-			while (game.isRunning()) {
-				moveRobots(game, gg, myg,fruits);
-			}
+			throw new RuntimeException(e);
 		}
 		String results = game.toString();
 		JOptionPane.showMessageDialog(f, "Game Over: " + results);
 
 		System.out.println("Game Over: " + results);
-		exit(1);
+//		int exitt = JOptionPane.showConfirmDialog(f, "Do you want to exit?");
+//		if(exitt==0) {
+			exit(0);
+	}
+
+	private static void closeKML(FileWriter writer) throws IOException {
+		writer.write("  </Document>\n" +
+				"</kml>");
+		writer.close();
+	}
+
+	private static void writeMyRnF(FileWriter writer, DGraph gg, game_service game) throws IOException {
+		Robots robots = new Robots(game,gg);
+		Date date =new Date();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat df2 = new SimpleDateFormat("HH:mm:ss");
+		String timeStr = df.format(date);
+		String timeStr2 = df2.format(date);
+		String finalDate = timeStr+"T"+timeStr2+"Z";
+		Fruits fruits = new Fruits(game,gg);
+		Iterator<Robot> robotsII = robots.iterator();
+		Iterator<Fruit> fruitIterator = fruits.iterator();
+		while (robotsII.hasNext()){
+			Robot temp = robotsII.next();
+			writer.write("<Placemark>\n" +
+					"      <TimeStamp>\n" +
+					"        <when>"+finalDate+"</when>\n" +
+					"      </TimeStamp>\n" +
+					"      <styleUrl>#hiker-icon</styleUrl>\n" +
+					"      <Point>\n" +
+					"        <coordinates>"+temp.getLocation().x()+","+temp.getLocation().y()+",0</coordinates>\n" +
+					"      </Point>\n" +
+					"    </Placemark>");
+		}
+		while (fruitIterator.hasNext()){
+			Fruit temp = fruitIterator.next();
+			String typer = "#paddle-a";
+			if (temp.getType()==1){
+				typer = "#paddle-b";
+			}
+			writer.write("<Placemark>\n" +
+					"      <TimeStamp>\n" +
+					"        <when>"+finalDate+"</when>\n" +
+					"      </TimeStamp>\n" +
+					"      <styleUrl>"+typer+"</styleUrl>\n" +
+					"      <Point>\n" +
+					"        <coordinates>"+temp.getPosition().x()+","+temp.getPosition().y()+",0</coordinates>\n" +
+					"      </Point>\n" +
+					"    </Placemark>");
+
+		}
+
+	}
+
+	private static void writeheader(FileWriter writer) throws IOException {
+		writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<kml xmlns=\"http://earth.google.com/kml/2.2\">\n" +
+				"  <Document>\n" +
+				"    <name>Points with TimeStamps</name>\n" +
+				"    <Style id=\"paddle-a\">\n" +
+				"      <IconStyle>\n" +
+				"        <Icon>\n" +
+				"          <href>http://maps.google.com/mapfiles/kml/paddle/A.png</href>\n" +
+				"        </Icon>\n" +
+				"        <hotSpot x=\"32\" y=\"1\" xunits=\"pixels\" yunits=\"pixels\"/>\n" +
+				"      </IconStyle>\n" +
+				"    </Style>\n" +
+				"    <Style id=\"paddle-b\">\n" +
+				"      <IconStyle>\n" +
+				"        <Icon>\n" +
+				"          <href>http://maps.google.com/mapfiles/kml/paddle/B.png</href>\n" +
+				"        </Icon>\n" +
+				"        <hotSpot x=\"32\" y=\"1\" xunits=\"pixels\" yunits=\"pixels\"/>\n" +
+				"      </IconStyle>\n" +
+				"    </Style>\n" +
+				"    <Style id=\"hiker-icon\">\n" +
+				"      <IconStyle>\n" +
+				"        <Icon>\n" +
+				"          <href>http://maps.google.com/mapfiles/ms/icons/hiker.png</href>\n" +
+				"        </Icon>\n" +
+				"        <hotSpot x=\"0\" y=\".5\" xunits=\"fraction\" yunits=\"fraction\"/>\n" +
+				"      </IconStyle>\n" +
+				"    </Style>\n" +
+				"    <Style id=\"check-hide-children\">\n" +
+				"      <ListStyle>\n" +
+				"        <listItemType>checkHideChildren</listItemType>\n" +
+				"      </ListStyle>\n" +
+				"    </Style>\n" +
+				" ");
+	}
+
+	private static void writeGraph(FileWriter writer, DGraph gg) throws IOException {
+		Iterator<node_data> temp = gg.getV().iterator();
+		while (temp.hasNext()) {
+			node_data n = temp.next();
+			writer.write("<Placemark>\n" +
+					"    <description>"+"place num:"+n.getKey()+"</description>\n" +
+					"    <Point>\n" +
+					"      <coordinates>"+n.getLocation().x()+","+n.getLocation().y()+",0</coordinates>\n" +
+					"    </Point>\n" +
+					"  </Placemark>\n");
+//			if (gg.getE(n.getKey()) != null) {
+//				List<edge_data> myE = new LinkedList<>(gg.getE(n.getKey()));
+//				for (edge_data edge : myE) {
+//					double x0 = n.getLocation().x();
+//					double y0 = n.getLocation().y();
+//					double y1 = gg.getNode(edge.getDest()).getLocation().y();
+//					double x1 = gg.getNode(edge.getDest()).getLocation().x();
+//				}
+//			}
+		}
 	}
 
 	private static int findStart(DGraph gg, game_service game) {
-		Graph_Algo graph_algo = new Graph_Algo(gg);
+		//Graph_Algo graph_algo = new Graph_Algo(gg);
 		Fruits fruts = new Fruits(game, gg);
 		Fruit max = fruts.getMaxValue();
 		edge_data eData = fruts.getEdge(max.getId());
@@ -136,7 +282,9 @@ public class SimpleGameClient {
 			} else
 				return eData.getDest();
 
-		} else return 0;
+		}
+		System.out.println("PROBLEM");
+		return 0;
 	}
 
 	/**
@@ -165,30 +313,34 @@ public class SimpleGameClient {
 					if (dest == -1) {
 						if (auto) {
 							fruits =  new Fruits(game,gg);
+							Robots list = new Robots(game,gg);
 							if (rid==0) {
-								dest = getFF(gg,game,rid,src,fruits,1);
-
-//								dest = goCloser(gg, src, rid, game,fruits);
-//								dest = nextNode(gg, src, rid, game, fruits);
-								if (speed>3){
-									dest = goCloser(gg, src, rid, game,fruits);
+								dest = goCloser(gg, src, rid, game,fruits,false);
+//								if (list.collection().size()<3 && speed<4){
 //									dest = nextNode(gg, src, rid, game, fruits);
-									//dest = getFF(gg,game,rid,src,fruits,0);
-									if (gg.getV().size()>15){
-										dest = nextNode(gg, src, rid, game, fruits);
-
+//								}
+//								else if (speed==1){
+//									dest = getFF(gg,game,rid,src,fruits,1);
+//								}
+								if (speed>=4){
+									dest = goCloser(gg, src, rid, game,fruits,true);
+//									dest = nextNode(gg, src, rid, game, fruits);
+//									dest = getFF(gg,game,rid,src,fruits,0);
+//									if (list.zise()) {
+//										dest = nextNode(gg, src, rid, game, fruits);
+//									}
 									}
-
-
-
-								}
+//								}
 							}
 
 							if (rid==1) {
 //								dest = getMinf(gg, src, rid, game,fruits);
-								dest = goCloser(gg, src, rid, game,fruits);
-								//dest = getFF(gg,game,rid,src,fruits,1);
+//								dest = getFF(gg,game,rid,src,fruits,4);
+								dest = nextNode(gg, src, rid, game, fruits);
 
+
+//								dest = goCloser(gg, src, rid, game,fruits,true);
+								//dest = getFF(gg,game,rid,src,fruits,1);
 
 							}
 //							if ((dest == -1 ||speed > 3)&&log.size()!=1){
@@ -196,12 +348,18 @@ public class SimpleGameClient {
 //								dest = nextNode(gg, src, rid, game,fruits);
 //							}
 							if ((dest == -1 && rid != 2 )) {
-								dest = goCloser(gg, src, rid, game,fruits);
+								dest = goCloser(gg, src, rid, game,fruits,true);
 
 							}
 							if (dest==-1){
-								dest = getFF(gg,game,rid,src,fruits,0);
+								dest = getFF(gg,game,rid,src,fruits,1);
+//								dest = goCloser(gg, src, rid, game,fruits,true);
+								if (speed>2)
 								//dest = getMinf(gg, src, rid, game,fruits);
+//								dest = nextNode(gg, src, rid, game, fruits);
+								dest = goCloser(gg, src, rid, game,fruits,false);
+
+
 							}
 
 
@@ -240,11 +398,11 @@ public class SimpleGameClient {
 			} else return graph_algo.shortestPath(src, edgedata.getSrc()).get(1).getKey();
 	}
 
-	private static int goCloser(graph g, int src, int rid, game_service game,Fruits fruts) {
+	private static int goCloser(graph g, int src, int rid, game_service game,Fruits fruts,boolean spd) {
 		Graph_Algo graph_algo = new Graph_Algo(g);
 		Robots robots = new Robots(game, g);
 		Robot r = robots.getRobot(rid);
-		Fruit fruit = fruts.getCloseF(src);
+		Fruit fruit = fruts.getCloseF(src,spd);
 
 			edge_data edgedata = fruts.getEdge(fruit.getId());
 			if (edgedata == null) {
@@ -357,6 +515,7 @@ public class SimpleGameClient {
 	private static int getFF(graph g, game_service game, int rid,int src,Fruits fruts,int id){
 		Graph_Algo algo =new Graph_Algo(g);
 		edge_data dde = fruts.getEdge(id);
+		if (dde!=null)
 		if (dde.getDest()==src)
 			return dde.getSrc();
 		else if (dde.getSrc()==src){
@@ -364,6 +523,7 @@ public class SimpleGameClient {
 
 		}
 		else return algo.shortestPath(src,dde.getDest()).get(1).getKey();
+		return -1;
 
 	}
 

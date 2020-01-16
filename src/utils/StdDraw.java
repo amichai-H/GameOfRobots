@@ -42,10 +42,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedList;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.TreeSet;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -719,14 +721,10 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
             delP.addActionListener(std);
         }
         {
-            isConnected.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-					Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-            save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-            addE.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-            addP.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+//            save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+//                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
         }
         gAlgoM.add(TSP);
         gAlgoM.add(isConnected);
@@ -2122,6 +2120,18 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		StdDraw.text(0.2, 0.5, "black text");
 		StdDraw.setPenColor(StdDraw.WHITE);
 		StdDraw.text(0.8, 0.8, "white text");
+//		Date date =new Date();
+//		String year = date.getYear()+"";
+//		String month = date.getMonth()+"";
+//		String day = date.getDay()+"";
+//		String hour = date.getHours()+"";
+//		String minits = date.getMinutes()+"";
+//		String second = date.getSeconds()+"";
+//		if (day.length()==1)
+//			day="0"+day;
+////change the to the format that you need
+//
+//		System.out.println(year+"-"+month+"-"+day+"T+"+hour+":"+minits+":"+second+"Z");
 	}
 
 }

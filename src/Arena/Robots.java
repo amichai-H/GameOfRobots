@@ -5,7 +5,6 @@ import dataStructure.graph;
 import dataStructure.node_data;
 import org.json.JSONObject;
 import utils.Point3D;
-import utils.StdDraw;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,5 +64,9 @@ public class Robots {
             }
         }
         return null;
+    }
+
+    public int zise() {
+        return myRobots.size();
     }
 }

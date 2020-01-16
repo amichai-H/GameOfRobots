@@ -3,17 +3,18 @@ package gameClient;
 import Server.game_service;
 import dataStructure.*;
 import org.json.JSONObject;
-import utils.Point3D;
-import utils.Range;
-import utils.StdDraw;
+import utils.*;
+
+import java.util.*;
 
 import java.awt.*;
 import java.io.Serializable;
 import java.util.List;
-import java.util.*;
+
 
 public class MyGameGUI implements Serializable{
     final String res = "update";
+    boolean first = true;
 
 
     private boolean inAction = false;
@@ -84,12 +85,38 @@ public class MyGameGUI implements Serializable{
     private double minX = 35.186, maxX =35.21, minY = 32.1, maxY = 32.11;
 
     public MyGameGUI(graph graph, game_service game){
+        try {
+            Thread thread = new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        MyGameGUI.playMuzic();
+
+                    } catch (Exception e){
+
+                    }
+                }
+            };
+            thread.start();
+
+        }catch (Exception e){
+            throw new RuntimeException(e);
+            //System.out.println("dont secccd");
+        }
         dGraph = (DGraph) graph;
         this.game = game;
         draw(1200,800,new Range(minX,maxX),new Range(minY,maxY));
         Timer timer = new Timer();
         if (!inAction)
             timer.schedule(new Active(this), 70, 1);
+
+    }
+
+    private static void playMuzic() throws Exception {
+
+
+        MakeSound makeSound = new MakeSound();
+        makeSound.playSound("theme.wav");
 
     }
 
@@ -116,6 +143,14 @@ public class MyGameGUI implements Serializable{
             Iterator<node_data> temp = dGraph.getV().iterator();
             while (temp.hasNext()) {
                 node_data n = temp.next();
+//                if (first){
+//                    first=false;
+//                    maxX = n.getLocation().x();
+//                    maxY = n.getLocation().y();
+//                    minX = n.getLocation().x();
+//                    minY = n.getLocation().y();
+//                    second = true;
+//                }
                 maxX = Math.max(n.getLocation().x(),maxX);
                 maxY = Math.max(n.getLocation().y(),maxY);
                 minX = Math.min(n.getLocation().x(),minX);
@@ -141,8 +176,8 @@ public class MyGameGUI implements Serializable{
                         StdDraw.setPenColor(Color.RED);
                        // StdDraw.text(0.3 * x0 + 0.7 * x1, 0.3 * y0 + 0.7 * y1, edge.getWeight() + "");
                         StdDraw.setPenRadius(0.03);
-                        StdDraw.setPenColor(StdDraw.RED);
-                        StdDraw.point(0.1 * x0 + 0.9 * x1, 0.1 * y0 + 0.9 * y1);
+                        //StdDraw.setPenColor(StdDraw.RED);
+                        //StdDraw.point(0.1 * x0 + 0.9 * x1, 0.1 * y0 + 0.9 * y1);
                         StdDraw.setPenRadius(0.01);
                         StdDraw.setPenColor(StdDraw.BLACK);
                     }
@@ -157,6 +192,8 @@ public class MyGameGUI implements Serializable{
         }
         inAction = false;
     }
+
+
     public void robotWalk() {
         StdDraw.enableDoubleBuffering();
         StdDraw.clear(Color.white);
@@ -165,47 +202,52 @@ public class MyGameGUI implements Serializable{
         addFrut();
         update();
         if (log != null) {
-            if (game.isRunning()) {
-                long t = game.timeToEnd();
-                for (int i = 0; i < log.size(); i++) {
-                    String robot_json = log.get(i);
-                    try {
-                        JSONObject line1 = new JSONObject(robot_json);
-                        JSONObject robot = line1.getJSONObject("Robot");
-                        int robotId = robot.getInt("id");
-                        String pos = robot.getString("pos");
-                        String pos3D[] = pos.split(",");
-                        Point3D position = new Point3D(Double.parseDouble(pos3D[0]), Double.parseDouble(pos3D[1]));
-                        StdDraw.setPenRadius(0.04);
-                        //StdDraw.setPenColor(StdDraw.GREEN);
-                        double dtx = maxX - minX;
-                        double dty = maxY - minY;
-                        StdDraw.picture(minX + dtx / 2,maxY - dty / 10, "headelin.png");
-                        Font font = new Font("Arial", Font.BOLD, 20);
-                        StdDraw.setFont(font);
-                        StdDraw.setPenColor(Color.BLACK);
-                        StdDraw.text(minX + dtx / 2, maxY - dty / 10, "Time left: " + t / 1000 + "." + t % 1000) ;
-                        StdDraw.setFont();
-                        if (robotId == 0) {
-                            StdDraw.picture(position.x(), position.y(), "robotP.png", 0.0006, 0.0006);
-                        } else if (robotId == 1) {
-                            StdDraw.picture(position.x(), position.y(), "robot1.png", 0.0004, 0.0004);
-                        } else if (robotId == 2) {
-                            StdDraw.picture(position.x(), position.y(), "robot2.jpg", 0.0004, 0.0004);
+            try {
 
-                        } else if (robotId == 3) {
-                            StdDraw.picture(position.x(), position.y(), "robot3.jpg", 0.001, 0.0004);
+                if (game.isRunning()) {
+                    long t = game.timeToEnd();
+                    for (int i = 0; i < log.size(); i++) {
+                        String robot_json = log.get(i);
+                        try {
+                            JSONObject line1 = new JSONObject(robot_json);
+                            JSONObject robot = line1.getJSONObject("Robot");
+                            int robotId = robot.getInt("id");
+                            String pos = robot.getString("pos");
+                            String pos3D[] = pos.split(",");
+                            Point3D position = new Point3D(Double.parseDouble(pos3D[0]), Double.parseDouble(pos3D[1]));
+                            StdDraw.setPenRadius(0.04);
+                            //StdDraw.setPenColor(StdDraw.GREEN);
+                            double dtx = maxX - minX;
+                            double dty = maxY - minY;
+                            StdDraw.picture(minX + dtx / 2, maxY - dty / 10, "headelin.png");
+                            Font font = new Font("Arial", Font.BOLD, 20);
+                            StdDraw.setFont(font);
+                            StdDraw.setPenColor(Color.BLACK);
+                            StdDraw.text(minX + dtx / 2, maxY - dty / 10, "Time left: " + t / 1000 + "." + t % 1000);
+                            StdDraw.setFont();
+                            if (robotId == 0) {
+                                StdDraw.picture(position.x(), position.y(), "harryR01.png");
+                            } else if (robotId == 1) {
+                                StdDraw.picture(position.x(), position.y(), "robotP.png", 0.001, 0.001);
+                            } else if (robotId == 2) {
+                                StdDraw.picture(position.x(), position.y(), "wolf.png");
 
-                        } else if (robotId == 4) {
-                            StdDraw.picture(position.x(), position.y(), "robot4.jpg", 0.0004, 0.0004);
+                            } else if (robotId == 3) {
+                                StdDraw.picture(position.x(), position.y(), "robot3.jpg", 0.001, 0.0004);
+
+                            } else if (robotId == 4) {
+                                StdDraw.picture(position.x(), position.y(), "robot4.jpg", 0.0004, 0.0004);
+
+                            }
+
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
 
                         }
-
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-
                     }
                 }
+            }catch (Exception e){
+
             }
         }
 //            addFrut();
@@ -228,7 +270,7 @@ public class MyGameGUI implements Serializable{
                     StdDraw.picture(position.x(), position.y(), "robotH.png", 0.001, 0.001);
                 }
                 else{
-                    StdDraw.picture(position.x(), position.y(), "fruitH.png", 0.002, 0.001);
+                    StdDraw.picture(position.x(), position.y(), "mapHarry.png");
 
                 }
 

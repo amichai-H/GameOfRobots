@@ -54,24 +54,28 @@ public class Fruits {
         while (nodeDataIterator.hasNext()){
             node_data temp = nodeDataIterator.next();
             Iterator<edge_data> edataIterator = graph.getE(temp.getKey()).iterator();
-            while (edataIterator.hasNext()){
+            while (edataIterator.hasNext()) {
                 edge_data tempE = edataIterator.next();
-                int src = tempE.getSrc() ;
+                int src = tempE.getSrc();
                 int des = tempE.getDest();
                 node_data srcN = graph.getNode(src);
                 node_data desN = graph.getNode(des);
-              Point3D middle = new Point3D((srcN.getLocation().x()*0.5+desN.getLocation().x()*0.5),(srcN.getLocation().y()*0.5+desN.getLocation().y()*0.5));
+                Point3D middle = new Point3D((srcN.getLocation().x() * 0.5 + desN.getLocation().x() * 0.5), (srcN.getLocation().y() * 0.5 + desN.getLocation().y() * 0.5));
 //                if (middle.distance2D(current.getPosition())<0.002){
 //                    return tempE;
 //                }
+                try {
 
-                double distanceA = srcN.getLocation().distance2D(current.getPosition())+current.getPosition().distance2D(desN.getLocation());
-                double distanceB = srcN.getLocation().distance2D(desN.getLocation());
-                //middle.distance2D(current.getPosition())<0.001
-                if(Math.abs(distanceA-distanceB)<=0.00001){
-                    return tempE;
+                    double distanceA = srcN.getLocation().distance2D(current.getPosition()) + current.getPosition().distance2D(desN.getLocation());
+                    double distanceB = srcN.getLocation().distance2D(desN.getLocation());
+                    //middle.distance2D(current.getPosition())<0.001
+                    if (Math.abs(distanceA - distanceB) <= 0.000000001) {
+                        return tempE;
+                    }
+                }catch (Exception e){
+
                 }
-            }
+                }
 
 
         }
@@ -93,9 +97,9 @@ public class Fruits {
         Iterator<Fruit> fruitIterator = iterator();
         if (fruitIterator.hasNext()) {
             Fruit max = fruitIterator.next();
-            while (!max.isTaken()&&fruitIterator.hasNext()){
-                max = fruitIterator.next();
-            }
+//            while (!max.isTaken()&&fruitIterator.hasNext()){
+//                max = fruitIterator.next();
+//            }
             while (fruitIterator.hasNext()){
                 Fruit temp = fruitIterator.next();
 
@@ -103,7 +107,7 @@ public class Fruits {
                     max = temp;
                 }
             }
-            max.take();
+           // max.take();
             return max;
         }
         return null;
@@ -113,9 +117,9 @@ public class Fruits {
         if (fruitIterator.hasNext()) {
             Fruit min = fruitIterator.next();
 
-            while (!min.isTaken()&&fruitIterator.hasNext()){
-                min = fruitIterator.next();
-            }
+//            while (!min.isTaken()&&fruitIterator.hasNext()){
+//                min = fruitIterator.next();
+//            }
             while (fruitIterator.hasNext()){
                 Fruit temp = fruitIterator.next();
 
@@ -123,13 +127,13 @@ public class Fruits {
                     min = temp;
                 }
             }
-            min.take();
+            //min.take();
             return min;
         }
         return null;
     }
 
-    public Fruit getCloseF(int src){
+    public Fruit getCloseF(int src,boolean spd){
         node_data nnode = graph.getNode(src);
         Graph_Algo graph_algo = new Graph_Algo(graph);
         Point3D p = nnode.getLocation();
@@ -144,8 +148,15 @@ public class Fruits {
                     Fruit temp = fruitIterator.next();
                     edge_data etepm = getEdge(temp.getId());
                     try {
-                        if (graph_algo.shortestPathDist(src,closeE.getDest())>graph_algo.shortestPathDist(src,etepm.getDest())){
-                            close = temp;
+                        if (spd) {
+                            if (graph_algo.shortestPathDist(src, closeE.getDest()) > graph_algo.shortestPathDist(src, etepm.getDest())) {
+                                close = temp;
+                            }
+                        }
+                        else {
+                            if (close.getPosition().distance2D(p)>temp.getPosition().distance2D(p)){
+                                close=temp;
+                            }
                         }
 
                     }catch (Exception e){
@@ -156,7 +167,7 @@ public class Fruits {
                     }
 
             }
-            close.take();
+            //close.take();
             return close;
         }
         return null;
