@@ -23,6 +23,7 @@ import Server.game_service;
 import oop_dataStructure.OOP_DGraph;
 import oop_dataStructure.oop_edge_data;
 import oop_dataStructure.oop_graph;
+import utils.KmlForGame;
 import utils.Point3D;
 import utils.Range;
 import utils.StdDraw;
@@ -60,12 +61,28 @@ public class SimpleGameClient {
 	}
 
 	public static void test1() {
+		KmlForGame kmlForGame = new KmlForGame();
 		JFrame f = new JFrame();
-		int aout = JOptionPane.showConfirmDialog(f, "Do you want auto game?");
 		//System.out.println(aout);
-		auto = aout == 0;
-		int scenario_num = Integer.parseInt(JOptionPane.showInputDialog(f, "Enter game 0-23 "));
-		//if (scenario_num ==16)
+		try {
+			auto =  JOptionPane.showConfirmDialog(f, "Do you want auto game?", "Start Game",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+		} catch (Exception e){
+			exit(1);
+		}
+
+
+		int scenario_num = -1;
+		while (!(scenario_num <=23&&scenario_num>=0)) {
+			try {
+				scenario_num = Integer.parseInt(JOptionPane.showInputDialog(f, "Enter game 0-23 "));
+
+			} catch (Exception e){
+
+				exit(1);
+			}
+        }
+        //if (scenario_num ==16)
 		//	System.out.println(scenario_num);
 
 		game_service game = Game_Server.getServer(scenario_num); // you have [0,23] games
@@ -109,22 +126,7 @@ public class SimpleGameClient {
 			e.printStackTrace();
 		}
 		try {
-
-
-			File file = new File("game " + scenario_num + "log" + new Date().getTime() + ".kml");
-
-//Create the file
-			if (file.createNewFile()) {
-				System.out.println("File is created!");
-			} else {
-				System.out.println("File already exists.");
-			}
-
-//Write Content
-			FileWriter writer = new FileWriter(file);
-			writeheader(writer);
-			writeGraph(writer,gg);
-
+			kmlForGame.addGraph(gg);
 			game.startGame();
 			Long l = game.timeToEnd();
 			// should be a Thread!!!
@@ -134,22 +136,18 @@ public class SimpleGameClient {
 
 				while (game.isRunning()) {
 					if (l-game.timeToEnd()>300L) {
-						writeMyRnF(writer, gg, game);
+						kmlForGame.writeMyRnF(gg,game);
 						l=game.timeToEnd();
 					}
 					moveRobots(game, gg, myg, fruits);
-
-
-
 				}
-
 			} catch (Exception e) {
 				Fruits fruits = new Fruits(game, gg);
 				while (game.isRunning()) {
 					moveRobots(game, gg, myg, fruits);
 				}
 			}
-			closeKML(writer);
+
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -158,117 +156,21 @@ public class SimpleGameClient {
 		JOptionPane.showMessageDialog(f, "Game Over: " + results);
 
 		System.out.println("Game Over: " + results);
-//		int exitt = JOptionPane.showConfirmDialog(f, "Do you want to exit?");
-//		if(exitt==0) {
-			exit(0);
-	}
-
-	private static void closeKML(FileWriter writer) throws IOException {
-		writer.write("  </Document>\n" +
-				"</kml>");
-		writer.close();
-	}
-
-	private static void writeMyRnF(FileWriter writer, DGraph gg, game_service game) throws IOException {
-		Robots robots = new Robots(game,gg);
-		Date date =new Date();
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		DateFormat df2 = new SimpleDateFormat("HH:mm:ss");
-		String timeStr = df.format(date);
-		String timeStr2 = df2.format(date);
-		String finalDate = timeStr+"T"+timeStr2+"Z";
-		Fruits fruits = new Fruits(game,gg);
-		Iterator<Robot> robotsII = robots.iterator();
-		Iterator<Fruit> fruitIterator = fruits.iterator();
-		while (robotsII.hasNext()){
-			Robot temp = robotsII.next();
-			writer.write("<Placemark>\n" +
-					"      <TimeStamp>\n" +
-					"        <when>"+finalDate+"</when>\n" +
-					"      </TimeStamp>\n" +
-					"      <styleUrl>#hiker-icon</styleUrl>\n" +
-					"      <Point>\n" +
-					"        <coordinates>"+temp.getLocation().x()+","+temp.getLocation().y()+",0</coordinates>\n" +
-					"      </Point>\n" +
-					"    </Placemark>");
-		}
-		while (fruitIterator.hasNext()){
-			Fruit temp = fruitIterator.next();
-			String typer = "#paddle-a";
-			if (temp.getType()==1){
-				typer = "#paddle-b";
+		try {
+		int save = JOptionPane.showConfirmDialog(f, "Do you want to save this game in kml?\n" +
+				"yore score was ");
+			if (save == 0) {
+				JSONObject endGame;
+					endGame = new JSONObject(results);
+					JSONObject ttt = endGame.getJSONObject("GameServer");
+					int rs = ttt.getInt("grade");
+				String filename = JOptionPane.showInputDialog(f, "Enter name to file save game REMEMBER: grade was: "+ rs);
+				kmlForGame.saveToFile(filename);
 			}
-			writer.write("<Placemark>\n" +
-					"      <TimeStamp>\n" +
-					"        <when>"+finalDate+"</when>\n" +
-					"      </TimeStamp>\n" +
-					"      <styleUrl>"+typer+"</styleUrl>\n" +
-					"      <Point>\n" +
-					"        <coordinates>"+temp.getPosition().x()+","+temp.getPosition().y()+",0</coordinates>\n" +
-					"      </Point>\n" +
-					"    </Placemark>");
-
-		}
-
-	}
-
-	private static void writeheader(FileWriter writer) throws IOException {
-		writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-				"<kml xmlns=\"http://earth.google.com/kml/2.2\">\n" +
-				"  <Document>\n" +
-				"    <name>Points with TimeStamps</name>\n" +
-				"    <Style id=\"paddle-a\">\n" +
-				"      <IconStyle>\n" +
-				"        <Icon>\n" +
-				"          <href>http://maps.google.com/mapfiles/kml/paddle/A.png</href>\n" +
-				"        </Icon>\n" +
-				"        <hotSpot x=\"32\" y=\"1\" xunits=\"pixels\" yunits=\"pixels\"/>\n" +
-				"      </IconStyle>\n" +
-				"    </Style>\n" +
-				"    <Style id=\"paddle-b\">\n" +
-				"      <IconStyle>\n" +
-				"        <Icon>\n" +
-				"          <href>http://maps.google.com/mapfiles/kml/paddle/B.png</href>\n" +
-				"        </Icon>\n" +
-				"        <hotSpot x=\"32\" y=\"1\" xunits=\"pixels\" yunits=\"pixels\"/>\n" +
-				"      </IconStyle>\n" +
-				"    </Style>\n" +
-				"    <Style id=\"hiker-icon\">\n" +
-				"      <IconStyle>\n" +
-				"        <Icon>\n" +
-				"          <href>http://maps.google.com/mapfiles/ms/icons/hiker.png</href>\n" +
-				"        </Icon>\n" +
-				"        <hotSpot x=\"0\" y=\".5\" xunits=\"fraction\" yunits=\"fraction\"/>\n" +
-				"      </IconStyle>\n" +
-				"    </Style>\n" +
-				"    <Style id=\"check-hide-children\">\n" +
-				"      <ListStyle>\n" +
-				"        <listItemType>checkHideChildren</listItemType>\n" +
-				"      </ListStyle>\n" +
-				"    </Style>\n" +
-				" ");
-	}
-
-	private static void writeGraph(FileWriter writer, DGraph gg) throws IOException {
-		Iterator<node_data> temp = gg.getV().iterator();
-		while (temp.hasNext()) {
-			node_data n = temp.next();
-			writer.write("<Placemark>\n" +
-					"    <description>"+"place num:"+n.getKey()+"</description>\n" +
-					"    <Point>\n" +
-					"      <coordinates>"+n.getLocation().x()+","+n.getLocation().y()+",0</coordinates>\n" +
-					"    </Point>\n" +
-					"  </Placemark>\n");
-//			if (gg.getE(n.getKey()) != null) {
-//				List<edge_data> myE = new LinkedList<>(gg.getE(n.getKey()));
-//				for (edge_data edge : myE) {
-//					double x0 = n.getLocation().x();
-//					double y0 = n.getLocation().y();
-//					double y1 = gg.getNode(edge.getDest()).getLocation().y();
-//					double x1 = gg.getNode(edge.getDest()).getLocation().x();
-//				}
-//			}
-		}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			exit(0);
 	}
 
 	private static int findStart(DGraph gg, game_service game) {

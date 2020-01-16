@@ -11,10 +11,18 @@ public class Robot {
         this.location = point3D;
     }
 
+    /**
+     *
+     * @return id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     *
+     * @return location in Point3D
+     */
     public Point3D getLocation() {
         return location;
     }

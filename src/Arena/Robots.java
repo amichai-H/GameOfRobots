@@ -15,6 +15,11 @@ public class Robots {
     ArrayList<Robot> myRobots = new ArrayList<>();
     graph graph;
 
+    /**
+     * init All the Robots
+     * @param game - rhe game after start
+     * @param g - the graph of the game
+     */
     public Robots(game_service game, graph g) {
         graph = g;
         List<String> log = game.getRobots();
@@ -37,24 +42,28 @@ public class Robots {
         }
     }
 
+    /**
+     * regular Iterator
+     * @return Iterator of the robot
+     */
+
     public Iterator<Robot> iterator(){
         return myRobots.iterator();
     }
+
+    /**
+     *
+     * @return Collection of the Robots
+     */
     public Collection<Robot> collection(){
         return myRobots;
     }
-    public int getNode(int id){
-        Iterator<node_data> nodeDataIterator = graph.getV().iterator();
-        Robot current = getRobot(id);
-        while (nodeDataIterator.hasNext()){
-            node_data temp = nodeDataIterator.next();
-            if (temp.getLocation().distance2D(current.getLocation())<0.0003){
-                return temp.getKey();
-            }
-        }
-        return -1;
 
-    }
+    /**
+     * return robot by ID
+     * @param id - id of the robot
+     * @return Robot
+     */
     public Robot getRobot(int id){
         Iterator<Robot> robotIterator = iterator();
         while (robotIterator.hasNext()){
@@ -66,6 +75,10 @@ public class Robots {
         return null;
     }
 
+    /**
+     *
+     * @return amount of Robot in int
+     */
     public int zise() {
         return myRobots.size();
     }

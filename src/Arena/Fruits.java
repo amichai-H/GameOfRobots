@@ -19,6 +19,12 @@ public class Fruits {
     graph graph;
     ArrayList<Fruit> myFrit = new ArrayList<>();
 
+    /**
+     * init Fruits
+     * @param game - game after start
+     * @param g - graph after init
+     */
+
     public Fruits(game_service game, graph g){
         graph = g;
         int i =0;
@@ -42,6 +48,10 @@ public class Fruits {
         }
     }
 
+    /**
+     * return collection of the fruit in the game
+     * @return collection
+     */
     public Collection<Fruit> getMyFrit() {
         return myFrit;
     }
