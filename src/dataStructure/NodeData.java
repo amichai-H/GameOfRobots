@@ -15,6 +15,16 @@ public class NodeData implements node_data, Serializable {
     private int nodeTag = -1;
     private HashMap<Integer,Edata> EMap = new LinkedHashMap<>();
     private static double maxY=10, maxX=10 , minX=-10, minY=-10;
+    public NodeData(Point3D location){
+        maxX = Math.max(location.x(),maxX);
+        maxY = Math.max(location.y(),maxY);
+        minX = Math.min(location.x(),minX);
+        minY = Math.min(location.y(),minY);
+        id = IDnode;
+        IDnode++;
+        nodeLoaction = location;
+
+    }
     public NodeData(int id,Point3D location){
         maxX = Math.max(location.x(),maxX);
         maxY = Math.max(location.y(),maxY);

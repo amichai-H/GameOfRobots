@@ -100,4 +100,7 @@ public class KmlForGame {
 
     }
 
+    public StringBuffer getLgerOfGame() {
+        return lgerOfGame;
+    }
 }

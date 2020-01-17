@@ -58,14 +58,18 @@ public class Fruits {
     public Iterator<Fruit> iterator(){
         return myFrit.iterator();
     }
+
+    /**
+     *
+     * @param id - of the Fruit
+     * @return the Edge the the fruit is on edge_data(type)
+     */
     public edge_data getEdge(int id){
         Iterator<node_data> nodeDataIterator = graph.getV().iterator();
         Fruit current = getFruit(id);
         while (nodeDataIterator.hasNext()){
             node_data temp = nodeDataIterator.next();
-            Iterator<edge_data> edataIterator = graph.getE(temp.getKey()).iterator();
-            while (edataIterator.hasNext()) {
-                edge_data tempE = edataIterator.next();
+            for (edge_data tempE : graph.getE(temp.getKey())) {
                 int src = tempE.getSrc();
                 int des = tempE.getDest();
                 node_data srcN = graph.getNode(src);
@@ -82,16 +86,22 @@ public class Fruits {
                     if (Math.abs(distanceA - distanceB) <= 0.000000001) {
                         return tempE;
                     }
-                }catch (Exception e){
+                } catch (Exception ignored) {
 
                 }
-                }
+            }
 
 
         }
         return null;
 
     }
+
+    /**
+     *
+     * @param id - of the fruit
+     * @return Fruit by id
+     */
     public Fruit getFruit(int id){
         Iterator<Fruit> fruitIterator = iterator();
         while (fruitIterator.hasNext()){
@@ -103,6 +113,10 @@ public class Fruits {
         return null;
     }
 
+    /**
+     * This is one of the methods that help so spare the Fruit between the Robots
+     * @return the maximum value between all the fruits
+     */
     public Fruit getMaxValue() {
         Iterator<Fruit> fruitIterator = iterator();
         if (fruitIterator.hasNext()) {
@@ -122,6 +136,10 @@ public class Fruits {
         }
         return null;
     }
+    /**
+     * This is one of the methods that help so spare the Fruit between the Robots
+     * @return the minimum value between all the fruits
+     */
      public Fruit geMinValue() {
         Iterator<Fruit> fruitIterator = iterator();
         if (fruitIterator.hasNext()) {
@@ -142,6 +160,13 @@ public class Fruits {
         }
         return null;
     }
+
+    /**
+     * This is one of the methods that help so spare the Fruit between the Robots
+     * @param src - int of the id that the Robot is on
+     * @param spd - boolean flag to select between "distance" to "time walk"
+     * @return Fruit that close to you
+     */
 
     public Fruit getCloseF(int src,boolean spd){
         node_data nnode = graph.getNode(src);

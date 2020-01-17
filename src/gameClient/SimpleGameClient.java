@@ -1,5 +1,6 @@
 package gameClient;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 import Arena.Fruit;
 import Arena.Fruits;
@@ -54,37 +56,31 @@ public class SimpleGameClient {
 	private static boolean auto = false;
 	private static HashMap<Double,Integer> myFruitShare = new HashMap<>();
 	static long time;
+	private static int scenario_num = -1;
+
 
 	public static void main(String[] a)
 	{
-		test1();
+		theGame();
 	}
 
-	public static void test1() {
+	private static void theGame() {
 		KmlForGame kmlForGame = new KmlForGame();
-		JFrame f = new JFrame();
-		//System.out.println(aout);
-		try {
+		JFrame f = new JFrame();try {
 			auto =  JOptionPane.showConfirmDialog(f, "Do you want auto game?", "Start Game",
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 		} catch (Exception e){
 			exit(1);
 		}
-
-
-		int scenario_num = -1;
 		while (!(scenario_num <=23&&scenario_num>=0)) {
 			try {
-				scenario_num = Integer.parseInt(JOptionPane.showInputDialog(f, "Enter game 0-23 "));
+				scenario_num = Integer.parseInt(JOptionPane.showInputDialog(f, "Pls select level between 0-23 "));
 
 			} catch (Exception e){
 
 				exit(1);
 			}
         }
-        //if (scenario_num ==16)
-		//	System.out.println(scenario_num);
-
 		game_service game = Game_Server.getServer(scenario_num); // you have [0,23] games
 		String g = game.getGraph();
 		DGraph gg = new DGraph();
@@ -96,10 +92,10 @@ public class SimpleGameClient {
 			line = new JSONObject(info);
 			JSONObject ttt = line.getJSONObject("GameServer");
 			int rs = ttt.getInt("robots");
-			//System.out.println(info);
-			//System.out.println(g);
-			// the list of fruits should be considered in your solution
-			//System.out.println(rs);
+			if(!auto)
+				JOptionPane.showMessageDialog(f,"The game is about to start.\n" +
+						"Pls select where to put the robots by clicking on node.\n" +
+						"You have "+ rs+ " robots.");
 			for (int a = 0; a < rs; a++) {
 				int src_node = -1;
 				if (!auto) {
@@ -127,9 +123,10 @@ public class SimpleGameClient {
 		}
 		try {
 			kmlForGame.addGraph(gg);
+			if (!auto)
+				JOptionPane.showMessageDialog(f,"START GAME");
 			game.startGame();
 			Long l = game.timeToEnd();
-			// should be a Thread!!!
 			try {
 				time = game.timeToEnd();
 				Fruits fruits = new Fruits(game, gg);
@@ -147,24 +144,28 @@ public class SimpleGameClient {
 					moveRobots(game, gg, myg, fruits);
 				}
 			}
-
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Exception ignored) {
 		}
 		String results = game.toString();
-		JOptionPane.showMessageDialog(f, "Game Over: " + results);
-
 		System.out.println("Game Over: " + results);
 		try {
+			JSONObject endGame;
+			endGame = new JSONObject(results);
+			JSONObject ttt = endGame.getJSONObject("GameServer");
+			int rs = ttt.getInt("grade");
+			int moves = ttt.getInt("moves");
+			JOptionPane.showMessageDialog(f, "Game Over \n" +
+					"Game scenario num: "+scenario_num+"\n"+
+					"your grade is:     " + rs+"\n" +
+					"amount of moves:   "+ moves);
+
 		int save = JOptionPane.showConfirmDialog(f, "Do you want to save this game in kml?\n" +
-				"yore score was ");
+				"your score was: "+rs+"\n" +
+				"Game scenario num: "+scenario_num);
 			if (save == 0) {
-				JSONObject endGame;
-					endGame = new JSONObject(results);
-					JSONObject ttt = endGame.getJSONObject("GameServer");
-					int rs = ttt.getInt("grade");
-				String filename = JOptionPane.showInputDialog(f, "Enter name to file save game REMEMBER: grade was: "+ rs);
+
+				String filename = JOptionPane.showInputDialog(f, "Enter name to file save game REMEMBER: grade was: "+ rs+"\n" +
+						"Game scenario num: "+scenario_num);
 				kmlForGame.saveToFile(filename);
 			}
 			} catch (Exception e) {
@@ -173,6 +174,12 @@ public class SimpleGameClient {
 			exit(0);
 	}
 
+	/**
+	 *
+	 * @param gg -  graph of the game "map"
+	 * @param game - the server game that running
+	 * @return src to start on the graph
+	 */
 	private static int findStart(DGraph gg, game_service game) {
 		//Graph_Algo graph_algo = new Graph_Algo(gg);
 		Fruits fruts = new Fruits(game, gg);
@@ -191,11 +198,12 @@ public class SimpleGameClient {
 
 	/**
 	 * Moves each of the robots along the edge,
-	 * in case the robot is on a node the next destination (next edge) is chosen (randomly).
+	 * in case the robot is on a node the next destination (next edge) is chosen.
+	 * Not randomly.
+	 * We have AI (Kind Of) that separate the fruit between the robot and strategy to each one Robot.
 	 *
-	 * @param game
-	 * @param gg
-	 * @param
+	 * @param game - server
+	 * @param gg - Map (graph)
 	 */
 	private static void moveRobots(game_service game, graph gg, MyGameGUI myGameGUI,Fruits fruits) {
 		List<String> log = game.move();
@@ -236,9 +244,13 @@ public class SimpleGameClient {
 							}
 
 							if (rid==1) {
+								if (scenario_num!=22) {
 //								dest = getMinf(gg, src, rid, game,fruits);
 //								dest = getFF(gg,game,rid,src,fruits,4);
-								dest = nextNode(gg, src, rid, game, fruits);
+									dest = nextNode(gg, src, fruits);
+								}
+								else
+									dest = goCloser(gg, src, rid, game,fruits,true);
 
 
 //								dest = goCloser(gg, src, rid, game,fruits,true);
@@ -254,7 +266,7 @@ public class SimpleGameClient {
 
 							}
 							if (dest==-1){
-								dest = getFF(gg,game,rid,src,fruits,1);
+								dest = getFF(gg,src,fruits,1);
 //								dest = goCloser(gg, src, rid, game,fruits,true);
 								if (speed>2)
 								//dest = getMinf(gg, src, rid, game,fruits);
@@ -269,7 +281,7 @@ public class SimpleGameClient {
 								//dest = randomedge(gg, src, rid);
 							}
 						} else {
-							dest = nextNode(gg, src, rid, game,null);
+							dest = nextNode(gg, src,null);
 						}
 						game.chooseNextEdge(rid, dest);
 						//System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));
@@ -282,7 +294,15 @@ public class SimpleGameClient {
 		}
 	}
 
-	private static int getMinf(graph g, int src, int rid, game_service game,Fruits fruts) {
+	/**
+	 * return the src the the minimum fruit is on
+	 * @param g - graph of the game "Map"
+	 * @param src - where is the robot now
+	 * @param fruts - all the fruits currently
+	 * @return next node in int(id)
+	 */
+
+	private static int getMinf(graph g, int src,Fruits fruts) {
 		Graph_Algo graph_algo = new Graph_Algo(g);
 		Fruit fruit = fruts.geMinValue();
 			edge_data edgedata = fruts.getEdge(fruit.getId());
@@ -320,6 +340,14 @@ public class SimpleGameClient {
 			} else return graph_algo.shortestPath(src, edgedata.getSrc()).get(1).getKey();
 
 	}
+
+	/**
+	 *
+	 * @param g - Map (graph)
+	 * @param src - where the robot is now
+	 * @param rid - robot id
+	 * @return next node in id
+	 */
 
 	private static int randomedge(graph g, int src, int rid) {
 //		int ans = -1;
@@ -359,13 +387,15 @@ public class SimpleGameClient {
 	}
 
 	/**
-	 * a very simple random walk implementation!
+	 * a very simple choose next edge
+	 * if this is manual game - we only find next node by x,y of the mouse
+	 * else  so we need to active the AI that we crated
 	 *
-	 * @param g
-	 * @param src
-	 * @return
+	 * @param g - Map (graph)
+	 * @param src - where the robot is now
+	 * @return next node in id
 	 */
-	private static int nextNode(graph g, int src, int rid, game_service game,Fruits fruits) {
+	private static int nextNode(graph g, int src,Fruits fruits) {
 		if (!auto) {
 			if (StdDraw.isMousePressed()) {
 				double x = StdDraw.mouseX();
@@ -375,11 +405,18 @@ public class SimpleGameClient {
 			}
 			return -1;
 		} else {
-			return findNextNode(g, game,rid, src,fruits);
+			return findNextNode(g, src,fruits);
 		}
 	}
 
-	private static int findNextNode(graph g, game_service game, int rid,int src,Fruits fruts) {
+	/**
+	 * this method uses the Ai in Fruits and solve bugs that the robot stay in place
+	 * @param g - graph of the game "Map"
+	 * @param src - where is the robot now
+	 * @param fruts - all the fruits currently
+	 * @return id of the next node
+	 */
+	private static int findNextNode(graph g,int src,Fruits fruts) {
 		Graph_Algo graph_algo = new Graph_Algo(g);
 		//Robots robots = new Robots(game,g);
 		//Robot current = robots.getRobot(rid);
@@ -398,23 +435,36 @@ public class SimpleGameClient {
 				} else return graph_algo.shortestPath(src, eData.getSrc()).get(1).getKey();
 			}
 			return -1;
-
-
-		//return -1;
-
 	}
 
+	/**
+	 * where is the user click on the screen
+	 * @param x - mouse x
+	 * @param y - mouse y
+	 * @param g - Map (graph)
+	 * @return id of the node
+	 */
+
 	private static int findsrc(double x, double y, graph g) {
-		Iterator<node_data> allnode = g.getV().iterator();
-		while (allnode.hasNext()) {
-			node_data temp = allnode.next();
+		for (node_data temp : g.getV()) {
 			Point3D lTemp = temp.getLocation();
 			if (Math.abs(lTemp.x() - x) < 0.0003 && Math.abs(lTemp.y() - y) < 0.0003)
 				return temp.getKey();
 		}
 		return -1;
 	}
-	private static int getFF(graph g, game_service game, int rid,int src,Fruits fruts,int id){
+
+	/**
+	 * one of the nice method tha help to separate the fruits
+	 * but be careful because there is no always a lot of fruits
+	 *
+	 * @param g - Map (graph)
+	 * @param src - where is the robot now
+	 * @param fruts - all the fruits currently
+	 * @param id - of the fruit
+	 * @return id of the next node
+	 */
+	private static int getFF(graph g,int src,Fruits fruts,int id){
 		Graph_Algo algo =new Graph_Algo(g);
 		edge_data dde = fruts.getEdge(id);
 		if (dde!=null)
@@ -430,345 +480,3 @@ public class SimpleGameClient {
 	}
 
 }
-
-//
-//package gameClient;
-//
-//import java.util.ArrayList;
-//import java.util.Collection;
-//import java.util.Comparator;
-//import java.util.Iterator;
-//import java.util.List;
-//import java.util.PriorityQueue;
-//
-//import org.json.JSONException;
-//import org.json.JSONObject;
-//import dataStructure.*;
-//import Server.Game_Server;
-//import Server.game_service;
-//import algorithms.Graph_Algo;
-//import algorithms.graph_algorithms;
-//
-//import javax.swing.*;
-//
-//import static java.lang.System.exit;
-//
-//
-///**
-// * This class represents a simple example for using the GameServer API:
-// * the main file performs the following tasks:
-// * 1. Creates a game_service [0,23] (line 36)
-// * 2. Constructs the graph from JSON String (lines 37-39)
-// * 3. Gets the scenario JSON String (lines 40-41)
-// * 4. Prints the fruits data (lines 44-45)
-// * 5. Add a single robot (line 48) // note: in genera a list of robots should be added
-// * 6. Starts game (line 49)
-// * 7. Main loop (should be a thread)
-// * 8. move the robot along the current edge (line 54)
-// * 9. direct to the next edge (if on a node) (line 68)
-// *
-// * @author boaz.benmoshe
-// *
-// */
-//public class SimpleGameClient {
-//	public static void main(String[] a) {
-////		game_service game = Game_Server.getServer(1); // you have [0,23] games
-////		String g = game.getGraph();
-////		DGraph gg = new DGraph();
-////		gg.init(g);
-//
-//		test1();
-//	}
-//	public static void test1() {
-//		game_service game = Game_Server.getServer(1); // you have [0,23] games
-//		String g = game.getGraph();
-//		DGraph gg = new DGraph();
-//		MyGameGUI myg = new MyGameGUI(gg, game);
-//		gg.init(g);
-//		String info = game.toString();
-//		System.out.println(info);
-//		System.out.println(g);
-//		// the list of fruits should be considered in your solution
-//		Iterator<String> f_iter = game.getFruits().iterator();
-//		while(f_iter.hasNext()) {System.out.println(f_iter.next());}
-//		// arbitrary node, you should start at one of the fruits
-//		LocateRobots(game,gg);
-//		System.out.println(game.getRobots().size());
-//		game.startGame();
-//		while(game.isRunning()) {
-//			long t = game.timeToEnd();
-//			//System.out.println("round: "+i+"  seconds to end:"+(t/1000));
-//			List<String> log = game.move();
-//			int i=0;
-//			while(i<log.size()) {
-//				String robot_json = log.get(i);
-//				//	System.out.println(robot_json);
-//				JSONObject line;
-//
-//				try {
-//					line = new JSONObject(robot_json);
-//					JSONObject ttt = line.getJSONObject("Robot");
-//					int rid = ttt.getInt("id");
-//					int src = ttt.getInt("src");
-//					int dest = ttt.getInt("dest");
-//
-//					if(dest==-1) {
-//						dest = nextNode(gg, src);
-//						game.chooseNextEdge(rid, dest);
-//						System.out.println("Turn to node: "+dest);
-//						System.out.println(ttt);
-//					}
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				i++;
-//			}
-//		}
-//		String results = game.toString();
-//		JFrame f =new JFrame();
-//		JOptionPane.showMessageDialog(f, "Game Over: " + results);
-//
-//		System.out.println("Game Over: " + results);
-//		exit(1);
-//	}
-//	/**
-//	 * a very simple random walk implementation!
-//	 * @param g
-//	 * @param src
-//	 * @return
-//	 */
-//	private static int nextNode(graph g, int src) {
-//		int ans = -1;
-//		Collection<edge_data> ee = g.getE(src);
-//		Iterator<edge_data> itr = ee.iterator();
-//		int s = ee.size();
-//		int r = (int)(Math.random()*s);
-//		int i=0;
-//		while(i<r) {itr.next();i++;}
-//		ans = itr.next().getDest();
-//		return ans;
-//	}
-//
-//	public static void LocateRobots(game_service game,graph g) {
-//		graph_algorithms MyGG=new Graph_Algo(g);
-//		int Rsize=getRobots(game.toString());
-//		int Fsize=game.getFruits().size();
-//		Collection<Integer> FruitsLocation=FindFruitNode(game,g);
-//		Object[] arr=FruitsLocation.toArray();
-//		int i = 0;
-//		if(Rsize<Fsize) {
-//			arr=FindShortestPath(FruitsLocation,Rsize,Fsize,MyGG,arr);
-//			for (i=0; i <Rsize; i++) {
-//				game.addRobot((int)arr[i]);
-//			}
-//		}
-//		else
-//			while(i<Rsize) {
-//				game.addRobot((int)arr[i]);
-//				i++;
-//			}
-//	}
-//
-//	public static Collection<Integer> FindFruitNode(game_service game,graph g) {
-//		Iterator<String> it =game.getFruits().iterator();
-//		Collection<Integer> Ans=new ArrayList<>();
-//		Collection<edge_data> MyNodes=new ArrayList<>();
-//		double PorN = 0;
-//		while(it.hasNext()) {
-//			String temp=it.next();
-//			temp=getPoints(temp);
-//			MyNodes=(InRange(temp,g.getV(),g));
-//			Object[] List=MyNodes.toArray();
-//			for (int i = 0; i < List.length; i++) {
-//				edge_data e=(edge_data)List[i];
-//				if(it.hasNext())
-//					PorN=getSign(it.next());
-//				if(PorN==-1)
-//					Ans.add(Math.min(e.getSrc(),e.getDest()));
-//				else
-//					Ans.add(Math.max(e.getSrc(),e.getDest()));
-//			}
-//		}
-//		return Ans;
-//	}
-//
-//	private static Collection<edge_data> InRange(String temp, Collection<node_data> v,graph g) {
-//		Collection<node_data> MyTargetNodes=g.getV();
-//		Collection<edge_data> NodesInRange=new ArrayList<edge_data>();
-//		for (node_data n : MyTargetNodes) {
-//			for (node_data t : MyTargetNodes) {
-//				if(t.equals(n))
-//					continue;
-//				if(isBetweenPoints(temp,n.getLocation().x(),n.getLocation().y(),t.getLocation().x(),t.getLocation().y()) && !NodesInRange.contains(g.getEdge(n.getKey(),t.getKey())) && g.getEdge(n.getKey(),t.getKey())!=null) {
-//					NodesInRange.add(g.getEdge(n.getKey(),t.getKey()));
-//				}
-//			}
-//		}
-//		return NodesInRange;
-//	}
-//
-//	private static boolean isBetweenPoints(String temp, double x, double y, double x2, double y2) {
-//		int i=0;
-//		double Eps=DistBetween2Points(x,y,x2,y2)/10;
-//		while(i<temp.length()) {
-//			if(temp.charAt(i)==',') {
-//				break;
-//			}
-//			i++;
-//		}
-//		String Tx=temp.substring(0,i);
-//		double tx=Double.parseDouble(Tx);
-//		String Ty=temp.substring(i+1,temp.length());
-//		double ty=Double.parseDouble(Ty);
-//		if(tx>Math.max(x,x2) || tx<Math.min(x,x2) || ty>Math.max(y,y2) || ty<Math.min(y,y2))
-//			return false;
-//		if(Math.abs((DistBetween2Points(tx,ty,x,y)+DistBetween2Points(tx,ty,x2,y2))-DistBetween2Points(x,y,x2,y2))>Eps)
-//			return false;
-//
-//		return true;
-//	}
-//
-//	private static double DistBetween2Points(double x1,double y1,double x2,double y2) {
-//		return Math.sqrt(Math.pow((y2-y1),2) + (Math.pow((x2 - x1),2)));
-//	}
-//
-//	private static String getPoints(String str) {
-//		int i=7,s=0,e=str.length()-5,count=0;
-//		boolean flag=false;
-//		while(i<str.length()) {
-//			if(str.charAt(i-2)=='p'&& str.charAt(i-1)=='o' && !flag) {
-//				flag=true;
-//			}
-//			if(flag && str.charAt(i-2)==':') {
-//				s=i;
-//			}
-//			if(str.charAt(i)==',') {
-//				count++;
-//			}
-//			if(count==4) {
-//				e=i;
-//				break;
-//			}
-//			i++;
-//		}
-//		return str.substring(s,e);
-//	}
-//
-//	private static double getSign(String next) {
-//		int i=0;
-//		boolean flag=false;
-//		String str=new String(next);
-//		while(i<str.length()) {
-//			i++;
-//			if(str.substring(i,i+4).equals("type") && !flag) {
-//				flag=true;
-//				i=i+4;
-//			}
-//			if(str.substring(i,i+2).equals(":1") && flag)
-//				return 1;
-//			if(str.substring(i,i+2).equals("-1") && flag)
-//				return -1;
-//		}
-//		return -1;
-//	}
-//
-//	private static int getRobots(String info) {
-//		int i=0;
-//		boolean flag=false;
-//		String str=new String(info);
-//		while(i<str.length()) {
-//			i++;
-//			if(str.charAt(i)=='r' && str.substring(i,i+6).equals("robots") && !flag) {
-//				flag=true;
-//				i=i+5;
-//			}
-//			if(str.substring(i,i+1).equals(":") && flag)
-//				return Integer.parseInt(str.substring(i+1,i+2));
-//		}
-//		return 0;
-//	}
-//
-//	private static Object[] FindShortestPath(Collection<Integer> fruitsLocation, int rsize, int fsize, graph_algorithms myGG, Object[] arr) {
-//		double RandF_Balance=fsize/rsize;
-//		Object[] ans=new Object[(int)RandF_Balance];
-//		PriorityQueue<Double> minHeap = new PriorityQueue<Double>();
-//		int j = 0;
-//		while(j < arr.length-1) {
-//			minHeap.add(myGG.shortestPathDist((int)arr[j],(int)arr[j+1]));
-//			j++;
-//		}
-//
-//		if((int)RandF_Balance==1) {
-//			j = 0;
-//			double f=minHeap.poll();
-//			while(j < arr.length-1) {
-//				double path=myGG.shortestPathDist((int)arr[j],(int)arr[j+1]);
-//				if(path==f) {
-//					ans[0]=j;
-//					break;
-//				}
-//				j++;
-//			}
-//		}
-//
-//		if((int)RandF_Balance==2) {
-//			j = 0;
-//			double f=minHeap.poll(),s=minHeap.poll();
-//			while(j < arr.length-1) {
-//				double path=myGG.shortestPathDist((int)arr[j],(int)arr[j+1]);
-//				if(path==f) {
-//					ans[0]=j;
-//				}
-//				if(path==s) {
-//					ans[1]=j;
-//					break;
-//				}
-//				j++;
-//			}
-//		}
-//
-//		if((int)RandF_Balance==3) {
-//			j = 0;
-//			double f=minHeap.poll(),s=minHeap.poll(),th=minHeap.poll();
-//			while(j < arr.length-1) {
-//				double path=myGG.shortestPathDist((int)arr[j],(int)arr[j+1]);
-//				if(path==f) {
-//					ans[0]=j;
-//				}
-//				if(path==s) {
-//					ans[1]=j;
-//				}
-//				if(path==th) {
-//					ans[2]=j;
-//					break;
-//				}
-//				j++;
-//			}
-//		}
-//
-//		if((int)RandF_Balance==4) {
-//			j = 0;
-//			double f=minHeap.poll(),s=minHeap.poll(),th=minHeap.poll(),fo=minHeap.poll();
-//			while(j < arr.length-1) {
-//				double path=myGG.shortestPathDist((int)arr[j],(int)arr[j+1]);
-//				if(path==f) {
-//					ans[0]=j;
-//				}
-//				if(path==s) {
-//					ans[1]=j;
-//				}
-//				if(path==th) {
-//					ans[2]=j;
-//				}
-//				if(path==fo) {
-//					ans[3]=j;
-//					break;
-//				}
-//				j++;
-//			}
-//		}
-//		return ans;
-//	}
-//
-//}

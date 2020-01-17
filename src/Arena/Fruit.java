@@ -16,25 +16,51 @@ public class Fruit {
         this.id = id;
     }
 
+    /**
+     * the value of the fruit
+     * @return value in double
+     */
     public double getValue() {
         return value;
     }
+
+    /**
+     * -1 the src --> des
+     * 1 the des --> src
+     * @return return the type of the fruit (-1/1)
+     */
 
     public int getType() {
         return type;
     }
 
+    /**
+     *
+     * @return location in Point3D
+     */
     public Point3D getPosition() {
         return position;
     }
 
+    /**
+     *
+     * @return id of the fruit
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * false if Not Taken and true if Taken
+     * @return boolean
+     */
     public boolean isTaken() {
         return taken;
     }
+
+    /**
+     * if you take the fruit
+     */
     public void take(){
         this.taken = true;
     }
