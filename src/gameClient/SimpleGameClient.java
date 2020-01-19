@@ -136,8 +136,8 @@ public class SimpleGameClient {
                         kmlForGame.writeMyRnF(gg, game);
                         l = game.timeToEnd();
 
-                    moveRobots(game, gg, myg, fruits);
                     }
+                    moveRobots(game, gg, myg, fruits);
 
                 }
 			} catch (Exception e) {
