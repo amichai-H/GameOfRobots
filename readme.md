@@ -1,10 +1,7 @@
 # Authors: Avi Boter & Amichai Hadad.
 
-This repository represents a Web Game,Game of Robot.
-in each scanerio of your chooise you should make the robot to collect fruits.
-the more fruit you collect the higher your score. your goal:get as much fruits as you can.
-fruit will be collected if the robot will pass it by.
-Just for the fun,we create the game map and robots/fruits to be a a figures of Harry Poter series.
+This repository represents a Web Game,Game of Robot. In each scenario of your choices you should make the robot to collect fruits. The more fruit you collect the higher your score. Your goal:get as much fruits as you can. Fruit will be collected if the robot will pass it by. Just for the fun ,we create the game map and robots/fruits to be a a figures of Harry Poter series.
+
 
 the game have 2 play modes,
 1. Play,menualy,which means the player should move each robot to his next location.
