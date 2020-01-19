@@ -15,7 +15,7 @@ the graph is based on our previuos project "Graph Project".
 Graph project allows you to display directed graphs and algorithms.
 you can exports the data of the game to KML and use it.
 
-Game of Robots Code has 3main Categuries. 
+Game of Robots Code has 3 - main Categuries. 
 
 1.the game structure and intallition code.
 
