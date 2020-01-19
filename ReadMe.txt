@@ -28,7 +28,7 @@ GameClient represents our comunication with the client and execution of his/auto
 GraphGui represents the visualisation of the data and figures movement.
 
 3.the Server.
-GameServer and JavaJason represents the game Senarios.
+GameServer and JavaJason represents the game Scenarios.
 
 for more info,see Wiki.
 
