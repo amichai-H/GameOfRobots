@@ -1,4 +1,4 @@
-Authors: Avi Boter & Amichai Hadad.
+# Authors: Avi Boter & Amichai Hadad.
 
 This repository represents a Web Game,Game of Robot.
 in each scanerio of your chooise you should make the robot to collect fruits.
@@ -30,7 +30,7 @@ GraphGui represents the visualisation of the data and figures movement.
 3.the Server.
 GameServer and JavaJason represents the game Scenarios.
 
-for more info,see Wiki.
+### for more info,see Wiki.
 
 
 
