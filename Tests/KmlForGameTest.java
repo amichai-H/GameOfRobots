@@ -74,6 +74,10 @@ class KmlForGameTest {
 
     }
 
+    /**
+     * To check if the file work open it with google earth.
+     */
+
     @Test
     void saveToFile() {
         graph.init(game_service.getGraph());

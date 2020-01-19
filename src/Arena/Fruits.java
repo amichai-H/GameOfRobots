@@ -60,7 +60,7 @@ public class Fruits {
     }
 
     /**
-     *
+     * return the edge of the the fruit
      * @param id - of the Fruit
      * @return the Edge the the fruit is on edge_data(type)
      */
@@ -98,7 +98,7 @@ public class Fruits {
     }
 
     /**
-     *
+     * return object fruit
      * @param id - of the fruit
      * @return Fruit by id
      */

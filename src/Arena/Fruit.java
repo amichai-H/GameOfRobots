@@ -9,6 +9,14 @@ public class Fruit {
     private int id;
     private boolean taken = false;
 
+    /**
+     * init fruit
+     * @param value - value of the fruit
+     * @param point3D - location
+     * @param type - from high to low (node id) --> type = -1, or from low to high type = 1.
+     * @param id - id of the fruit
+     */
+
     public Fruit(double value,Point3D point3D,int type,int id){
         this.position = point3D;
         this.type = type;

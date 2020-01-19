@@ -132,12 +132,14 @@ public class SimpleGameClient {
 				Fruits fruits = new Fruits(game, gg);
 
 				while (game.isRunning()) {
-					if (l-game.timeToEnd()>300L) {
-						kmlForGame.writeMyRnF(gg,game);
-						l=game.timeToEnd();
-					}
-					moveRobots(game, gg, myg, fruits);
-				}
+					if (l-game.timeToEnd()>150L) {
+                        kmlForGame.writeMyRnF(gg, game);
+                        l = game.timeToEnd();
+
+                    moveRobots(game, gg, myg, fruits);
+                    }
+
+                }
 			} catch (Exception e) {
 				Fruits fruits = new Fruits(game, gg);
 				while (game.isRunning()) {
@@ -244,17 +246,21 @@ public class SimpleGameClient {
 							}
 
 							if (rid==1) {
-								if (scenario_num!=22) {
+								if (scenario_num!=22&&scenario_num!=23) {
 //								dest = getMinf(gg, src, rid, game,fruits);
 //								dest = getFF(gg,game,rid,src,fruits,4);
 									dest = nextNode(gg, src, fruits);
 								}
-								else
+								else if (scenario_num==22)
 									dest = goCloser(gg, src, rid, game,fruits,true);
 
 
 //								dest = goCloser(gg, src, rid, game,fruits,true);
 								//dest = getFF(gg,game,rid,src,fruits,1);
+                                else {
+                                    dest = getFF(gg,src,fruits,3);
+
+                                }
 
 							}
 //							if ((dest == -1 ||speed > 3)&&log.size()!=1){
