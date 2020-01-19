@@ -8,7 +8,7 @@ Just for the fun,we create the game map and robots/fruits to be a a figures of H
 
 the game have 2 play modes,
 1. Play,menualy,which means the player should move each robot to his next location.
-2. Automatic Mode,which means the robot will be move accurding to pattrens and alguritems we crearted.
+2. Automatic Mode,which means the robot will be move accurding to pattrens and algurithems we crearted.
 
 We create graph to be the inverment which the game will be played in.
 the graph is based on our previuos project "Graph Project".
