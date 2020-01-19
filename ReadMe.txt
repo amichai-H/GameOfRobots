@@ -21,7 +21,7 @@ Game of Robots Code has 3main Categuries.
 
 Areana represents the Areana which in the game is beeing played.
 Algorithems represents the algorithems we use.
-GameClient represents our comunication with the client.
+GameClient represents our comunication with the client and execution of his/auto plays.
 
 2.the visual part.
 
