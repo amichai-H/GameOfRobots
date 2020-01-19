@@ -30,7 +30,7 @@ GraphGui represents the visualisation of the data and figures movement.
 3.the Server.
 GameServer and JavaJason represents the game Scenarios.
 
-### for more info,see Wiki.
+### for more info,see [Wiki](https://github.com/amichai-H/GameOfRobots/wiki).
 
 
 
