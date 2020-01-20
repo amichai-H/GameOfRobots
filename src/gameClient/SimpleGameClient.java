@@ -64,7 +64,13 @@ public class SimpleGameClient {
 		theGame();
 	}
 
+	/**
+	 * That is the main thing. When everything connected.
+	 * The heart and the brain of the system.
+	 */
 	private static void theGame() {
+        int id = 315149500;
+        Game_Server.login(id);
 		KmlForGame kmlForGame = new KmlForGame();
 		JFrame f = new JFrame();try {
 			auto =  JOptionPane.showConfirmDialog(f, "Do you want auto game?", "Start Game",
@@ -132,12 +138,13 @@ public class SimpleGameClient {
 				Fruits fruits = new Fruits(game, gg);
 
 				while (game.isRunning()) {
-					if (l-game.timeToEnd()>150L) {
+					if (l-game.timeToEnd()>140L) {
                         kmlForGame.writeMyRnF(gg, game);
                         l = game.timeToEnd();
 
-                    }
                     moveRobots(game, gg, myg, fruits);
+                    }
+
 
                 }
 			} catch (Exception e) {
