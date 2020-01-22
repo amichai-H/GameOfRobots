@@ -131,13 +131,13 @@ public class SimpleGameClient {
 					}
 					if (scenario_num == 23){
 						if (a==0){
-							src_node =  33;
+							src_node =  38;
 						}
 						else if(a==1){
 							src_node = 1;
 						}
 						else {
-							src_node = 19;
+							src_node = 18;
 						}
 					}
 //					if (scenario_num==20) {
@@ -301,7 +301,9 @@ public class SimpleGameClient {
 								}
 								else if (scenario_num==22||scenario_num==16||scenario_num==23) {
 //									dest = goCloser(gg, src, rid, game, fruits, true);
-									dest = nextNode(gg, src, fruits);
+									//dest = nextNode(gg, src, fruits);
+									dest = getFF(gg,src,fruits,3);
+
 
 
 //								dest = goCloser(gg, src, rid, game,fruits,true);
@@ -327,7 +329,9 @@ public class SimpleGameClient {
 							if (dest==-1){
 								//dest = goCloser(gg, src, rid, game,fruits,false);
 //								dest = getMinf(gg, src,fruits);
-								dest = getFF(gg,src,fruits,2);
+								//dest = getFF(gg,src,fruits,2);
+								dest = getMinf(gg, src,fruits,5);
+
 
 
 								if (speed>2)

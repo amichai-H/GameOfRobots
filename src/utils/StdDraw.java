@@ -709,6 +709,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 //		JMenuItem delP = new JMenuItem("del P");
 		JMenuItem checkRank = new JMenuItem("check rank");
 		JMenuItem checkMyLevel = new JMenuItem("My Level is:");
+		JMenuItem gameCounter = new JMenuItem("game counter");
 //		JMenuItem isConnected = new JMenuItem("isConnected");
 //		JMenuItem shortestPathDist = new JMenuItem("shortestPathDist");
 //		JMenuItem shortestPath = new JMenuItem("shortestPath");
@@ -716,6 +717,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         {
         	checkRank.addActionListener(std);
         	checkMyLevel.addActionListener(std);
+        	gameCounter.addActionListener(std);
 //        	TSP.addActionListener(std);
 //            isConnected.addActionListener(std);
 //            shortestPathDist.addActionListener(std);
@@ -736,6 +738,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         }
         dataB.add(checkRank);
 		dataB.add(checkMyLevel);
+		dataB.add(gameCounter);
 //        gAlgoM.add(TSP);
 //        gAlgoM.add(isConnected);
 //        gAlgoM.add(shortestPath);
@@ -1715,17 +1718,27 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 
 			}
-			else if (e.getActionCommand().equals("My Level is:")){
+			else if (e.getActionCommand().equals("My Level is:")) {
 				JFrame f;
 				f = new JFrame();
 				int id = Integer.parseInt(JOptionPane.showInputDialog(f, "Enter id"));
 				String rank = SimpleDB.getLevel(id);
+				JOptionPane.showMessageDialog(f, rank);
+
+
+			}
+			else if (e.getActionCommand().equals("game counter")){
+				JFrame f;
+				f = new JFrame();
+				int id = Integer.parseInt(JOptionPane.showInputDialog(f, "Enter id"));
+				String rank = SimpleDB.getCounter(id);
 				JOptionPane.showMessageDialog(f,rank);
 
 
 
 
 			}
+
 			else if (e.getActionCommand().equals("del E")) {
 				JFrame f;
 				f = new JFrame();
