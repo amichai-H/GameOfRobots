@@ -17,8 +17,8 @@ public class SimpleDB {
 	public static final String jdbcUrl="jdbc:mysql://db-mysql-ams3-67328-do-user-4468260-0.db.ondigitalocean.com:25060/oop?useUnicode=yes&characterEncoding=UTF-8&useSSL=false";
 	public static final String jdbcUser="student";
 	public static final String jdbcUserPassword="OOP2020student";
-	private static String jdbcAdmin = "doadmin";
-	private static String jdbcAdminPassword = "guvvx0m0g955vix3";
+//	private static String jdbcAdmin = "doadmin";
+//	private static String jdbcAdminPassword = "guvvx0m0g955vix3";
 	private static int[][] results ={{0,145,290},{1,450,580},{3,750,580},{5,570,500},{9,510,580},{11,1050,580},{13,310,580},{16,235,290},{19,250,580},{20,200,290},{23,1000,1140}};
 	
 	/**
@@ -122,25 +122,25 @@ public class SimpleDB {
 			}
 			return ans;
 		}
-		static boolean writeRes(int id, int level, int moves, int grade) {
-			boolean ans = false;
-			long now = (new Date()).getTime();
-			String query = " insert into Logs (UserID, LevelID, time, moves, score) values (" + id + ", " + level + ", CURRENT_TIMESTAMP," + moves + " , " + grade + ")";
-
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				Connection connection = DriverManager.getConnection(jdbcUrl, jdbcAdmin, jdbcAdminPassword);
-				Statement statement = connection.createStatement();
-				statement.executeUpdate(query);
-			} catch (SQLException var10) {
-				System.out.println("SQLException: " + var10.getMessage());
-				System.out.println("Vendor Error: " + var10.getErrorCode());
-			} catch (ClassNotFoundException var11) {
-				var11.printStackTrace();
-			}
-
-			return ans;
-		}
+//		static boolean writeRes(int id, int level, int moves, int grade) {
+//			boolean ans = false;
+//			long now = (new Date()).getTime();
+//			String query = " insert into Logs (UserID, LevelID, time, moves, score) values (" + id + ", " + level + ", CURRENT_TIMESTAMP," + moves + " , " + grade + ")";
+//
+//			try {
+//				Class.forName("com.mysql.jdbc.Driver");
+//				Connection connection = DriverManager.getConnection(jdbcUrl, jdbcAdmin, jdbcAdminPassword);
+//				Statement statement = connection.createStatement();
+//				statement.executeUpdate(query);
+//			} catch (SQLException var10) {
+//				System.out.println("SQLException: " + var10.getMessage());
+//				System.out.println("Vendor Error: " + var10.getErrorCode());
+//			} catch (ClassNotFoundException var11) {
+//				var11.printStackTrace();
+//			}
+//
+//			return ans;
+//		}
 
 	public static String getRank(int id, int level) {
 		HashMap<Integer,Boolean> myHash = new HashMap<>();
