@@ -97,7 +97,7 @@ class FruitsTest {
         gg.init(g);
 
         Fruits fruits = new Fruits(game, gg);
-        Fruit myMin = fruits.geMinValue();
+        Fruit myMin = fruits.geMinValue(0);
         Iterator<Fruit> fruitIterator = fruits.iterator();
         Fruit min = fruitIterator.next();
         while (fruitIterator.hasNext()){
@@ -106,7 +106,7 @@ class FruitsTest {
                 min = temp;
             }
         }
-        System.out.println(min.getValue()+" "+fruits.geMinValue().getValue());
+        System.out.println(min.getValue()+" "+fruits.geMinValue(0).getValue());
         assertEquals(min,myMin);
         game.stopGame();
     }

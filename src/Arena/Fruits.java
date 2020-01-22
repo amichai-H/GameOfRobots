@@ -83,7 +83,7 @@ public class Fruits {
                     double distanceA = srcN.getLocation().distance2D(current.getPosition()) + current.getPosition().distance2D(desN.getLocation());
                     double distanceB = srcN.getLocation().distance2D(desN.getLocation());
                     //middle.distance2D(current.getPosition())<0.001
-                    if (Math.abs(distanceA - distanceB) <= 0.000000001) {
+                    if (Math.abs(distanceA - distanceB) <= 0.0000000001) {
                         return tempE;
                     }
                 } catch (Exception ignored) {
@@ -140,14 +140,16 @@ public class Fruits {
      * This is one of the methods that help so spare the Fruit between the Robots
      * @return the minimum value between all the fruits
      */
-     public Fruit geMinValue() {
+     public Fruit geMinValue(int fromEnd) {
         Iterator<Fruit> fruitIterator = iterator();
+        int count = 0;
         if (fruitIterator.hasNext()) {
             Fruit min = fruitIterator.next();
-
-//            while (!min.isTaken()&&fruitIterator.hasNext()){
-//                min = fruitIterator.next();
-//            }
+            if (min.isTaken()) {
+                while (!min.isTaken() && fruitIterator.hasNext()) {
+                    min = fruitIterator.next();
+                }
+            }
             while (fruitIterator.hasNext()){
                 Fruit temp = fruitIterator.next();
 
@@ -155,7 +157,12 @@ public class Fruits {
                     min = temp;
                 }
             }
-            //min.take();
+            if (count<fromEnd) {
+                min.take();
+                return geMinValue(fromEnd-1);
+
+            }
+            else
             return min;
         }
         return null;

@@ -69,10 +69,11 @@ public class SimpleGameClient {
 	 * The heart and the brain of the system.
 	 */
 	private static void theGame() {
+		JFrame f = new JFrame();
         int id = 315149500;
         Game_Server.login(id);
 		KmlForGame kmlForGame = new KmlForGame();
-		JFrame f = new JFrame();try {
+		try {
 			auto =  JOptionPane.showConfirmDialog(f, "Do you want auto game?", "Start Game",
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 		} catch (Exception e){
@@ -119,8 +120,36 @@ public class SimpleGameClient {
 					}
 				} else {
 					src_node = findStart(gg, game) + a+1;
-					if (scenario_num==16)
-						src_node = a;
+					if (a==1&& scenario_num == 13)
+						src_node = 40;
+					if (scenario_num==16||scenario_num==23) {
+						if (a == 0) {
+							src_node = 10;
+						}
+						else
+							src_node = 40;
+					}
+					if (scenario_num == 23){
+						if (a==0){
+							src_node =  33;
+						}
+						else if(a==1){
+							src_node = 1;
+						}
+						else {
+							src_node = 19;
+						}
+					}
+//					if (scenario_num==20) {
+//						if (a == 1) {
+//							src_node = 10;
+//						}
+//						else if(a==2)
+//							src_node = 15;
+//						else if(a==0)
+//							src_node = 19;
+//					}
+
 				}
 				game.addRobot(src_node);
 			}
@@ -138,7 +167,7 @@ public class SimpleGameClient {
 				Fruits fruits = new Fruits(game, gg);
 
 				while (game.isRunning()) {
-					if (l-game.timeToEnd()>140L) {
+					if (l-game.timeToEnd()>56L) {
                         kmlForGame.writeMyRnF(gg, game);
                         l = game.timeToEnd();
 
@@ -176,11 +205,12 @@ public class SimpleGameClient {
 				String filename = JOptionPane.showInputDialog(f, "Enter name to file save game REMEMBER: grade was: "+ rs+"\n" +
 						"Game scenario num: "+scenario_num);
 				kmlForGame.saveToFile(filename);
+				game.sendKML(kmlForGame.getLgerOfGame()+"");
 			}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			exit(0);
+			//exit(0);
 	}
 
 	/**
@@ -234,36 +264,49 @@ public class SimpleGameClient {
 							fruits =  new Fruits(game,gg);
 							Robots list = new Robots(game,gg);
 							if (rid==0) {
-								dest = goCloser(gg, src, rid, game,fruits,false);
+								boolean b = scenario_num ==19;
+								//dest = goCloser(gg, src, rid, game,fruits,b);
 //								if (list.collection().size()<3 && speed<4){
-//									dest = nextNode(gg, src, rid, game, fruits);
+								dest = nextNode(gg, src, fruits);
+
 //								}
 //								else if (speed==1){
 //									dest = getFF(gg,game,rid,src,fruits,1);
 //								}
-								if (speed>=4){
-									dest = goCloser(gg, src, rid, game,fruits,true);
-//									dest = nextNode(gg, src, rid, game, fruits);
-//									dest = getFF(gg,game,rid,src,fruits,0);
-//									if (list.zise()) {
-//										dest = nextNode(gg, src, rid, game, fruits);
+//								if (speed>=4){
+////									dest = goCloser(gg, src, rid, game,fruits,true);
+////									dest = getFF(gg,game,rid,src,fruits,0);
+//									dest = nextNode(gg, src, fruits);
+////									if (list.zise()) {
+////										dest = nextNode(gg, src, rid, game, fruits);
+////									}
 //									}
-									}
 //								}
+								if (scenario_num == 23){
+									dest = nextNode(gg, src, fruits);
+
+
+								}
+								if (speed>3){
+									dest = getMinf(gg, src,fruits,3);
+
+								}
 							}
 
 							if (rid==1) {
-								if (scenario_num!=22&&scenario_num!=23) {
+								if (scenario_num!=22&&scenario_num!=23&&scenario_num!=16) {
 //								dest = getMinf(gg, src, rid, game,fruits);
 //								dest = getFF(gg,game,rid,src,fruits,4);
-									dest = nextNode(gg, src, fruits);
+//									dest = nextNode(gg, src, fruits);
 								}
-								else if (scenario_num==22)
-									dest = goCloser(gg, src, rid, game,fruits,true);
+								else if (scenario_num==22||scenario_num==16||scenario_num==23) {
+//									dest = goCloser(gg, src, rid, game, fruits, true);
+									dest = nextNode(gg, src, fruits);
 
 
 //								dest = goCloser(gg, src, rid, game,fruits,true);
-								//dest = getFF(gg,game,rid,src,fruits,1);
+//									dest = getFF(gg,src,fruits,1);
+								}
                                 else {
                                     dest = getFF(gg,src,fruits,3);
 
@@ -275,16 +318,21 @@ public class SimpleGameClient {
 //								dest = nextNode(gg, src, rid, game,fruits);
 //							}
 							if ((dest == -1 && rid != 2 )) {
-								dest = goCloser(gg, src, rid, game,fruits,true);
+//								dest = nextNode(gg, src, fruits);
+								dest = getMinf(gg, src,fruits,2);
+
+//								dest = goCloser(gg, src, rid, game,fruits,true);
 
 							}
 							if (dest==-1){
-								dest = getFF(gg,src,fruits,1);
-//								dest = goCloser(gg, src, rid, game,fruits,true);
+								//dest = goCloser(gg, src, rid, game,fruits,false);
+//								dest = getMinf(gg, src,fruits);
+								dest = getFF(gg,src,fruits,2);
+
+
 								if (speed>2)
-								//dest = getMinf(gg, src, rid, game,fruits);
-//								dest = nextNode(gg, src, rid, game, fruits);
-								dest = goCloser(gg, src, rid, game,fruits,false);
+								dest = getMinf(gg, src,fruits,0);
+//								dest = goCloser(gg, src, rid, game,fruits,true);
 
 
 							}
@@ -315,9 +363,9 @@ public class SimpleGameClient {
 	 * @return next node in int(id)
 	 */
 
-	private static int getMinf(graph g, int src,Fruits fruts) {
+	private static int getMinf(graph g, int src,Fruits fruts,int fromEND) {
 		Graph_Algo graph_algo = new Graph_Algo(g);
-		Fruit fruit = fruts.geMinValue();
+		Fruit fruit = fruts.geMinValue(fromEND);
 			edge_data edgedata = fruts.getEdge(fruit.getId());
 
 			if (edgedata == null) {

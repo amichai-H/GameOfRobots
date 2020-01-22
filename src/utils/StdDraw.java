@@ -29,6 +29,7 @@ package utils;
 
 import dataStructure.node_data;
 import gameClient.MyGameGUI;
+import gameClient.SimpleDB;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -689,36 +690,43 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	// create the menu bar (changed to private)
 	private static JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("File");
-		JMenu addM = new JMenu("Add");
-		JMenu gAlgoM = new JMenu("Algo");
-		JMenu delete = new JMenu("Delete");
+				JMenu menu = new JMenu("File");
+//				JMenu addM = new JMenu("Add");
+//				JMenu gAlgoM = new JMenu("Algo");
+//				JMenu delete = new JMenu("Delete");
+				JMenu dataB = new JMenu("DataBase");
 		menuBar.add(menu);
-		menuBar.add(addM);
-		menuBar.add(delete);
-		menuBar.add(gAlgoM);
+//		menuBar.add(addM);
+//		menuBar.add(delete);
+//		menuBar.add(gAlgoM);
+		menuBar.add(dataB);
 
 		JMenuItem save = new JMenuItem("save");
-		JMenuItem load = new JMenuItem("load");
-		JMenuItem addE = new JMenuItem("add E");
-		JMenuItem addP = new JMenuItem("add P");
-		JMenuItem delE = new JMenuItem("del E");
-		JMenuItem delP = new JMenuItem("del P");
-		JMenuItem isConnected = new JMenuItem("isConnected");
-		JMenuItem shortestPathDist = new JMenuItem("shortestPathDist");
-		JMenuItem shortestPath = new JMenuItem("shortestPath");
-		JMenuItem TSP = new JMenuItem("TSP");
+//		JMenuItem load = new JMenuItem("load");
+//		JMenuItem addE = new JMenuItem("add E");
+//		JMenuItem addP = new JMenuItem("add P");
+//		JMenuItem delE = new JMenuItem("del E");
+//		JMenuItem delP = new JMenuItem("del P");
+		JMenuItem checkRank = new JMenuItem("check rank");
+		JMenuItem checkMyLevel = new JMenuItem("My Level is:");
+//		JMenuItem isConnected = new JMenuItem("isConnected");
+//		JMenuItem shortestPathDist = new JMenuItem("shortestPathDist");
+//		JMenuItem shortestPath = new JMenuItem("shortestPath");
+//		JMenuItem TSP = new JMenuItem("TSP");
         {
-        	TSP.addActionListener(std);
-            isConnected.addActionListener(std);
-            shortestPathDist.addActionListener(std);
-            shortestPath.addActionListener(std);
+        	checkRank.addActionListener(std);
+        	checkMyLevel.addActionListener(std);
+//        	TSP.addActionListener(std);
+//            isConnected.addActionListener(std);
+//            shortestPathDist.addActionListener(std);
+//            shortestPath.addActionListener(std);
             save.addActionListener(std);
-            load.addActionListener(std);
-            addE.addActionListener(std);
-            addP.addActionListener(std);
-            delE.addActionListener(std);
-            delP.addActionListener(std);
+//            load.addActionListener(std);
+//            addE.addActionListener(std);
+//            addP.addActionListener(std);
+//            delE.addActionListener(std);
+//            delP.addActionListener(std);
+//            delP.addActionListener(std);
         }
         {
 
@@ -726,16 +734,18 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 //                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
         }
-        gAlgoM.add(TSP);
-        gAlgoM.add(isConnected);
-        gAlgoM.add(shortestPath);
-        gAlgoM.add(shortestPathDist);
+        dataB.add(checkRank);
+		dataB.add(checkMyLevel);
+//        gAlgoM.add(TSP);
+//        gAlgoM.add(isConnected);
+//        gAlgoM.add(shortestPath);
+//        gAlgoM.add(shortestPathDist);
 		menu.add(save);
-		menu.add(load);
-		addM.add(addE);
-		addM.add(addP);
-		delete.add(delE);
-		delete.add(delP);
+//		menu.add(load);
+//		addM.add(addE);
+//		addM.add(addP);
+//		delete.add(delE);
+//		delete.add(delP);
 		return menuBar;
 	}
 
@@ -1691,6 +1701,29 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 				}catch (Exception e1){
 					JOptionPane.showMessageDialog(f,"Integers Only");
 				}
+
+			}
+			else if (e.getActionCommand().equals("check rank")){
+				JFrame f;
+				f = new JFrame();
+				int id = Integer.parseInt(JOptionPane.showInputDialog(f, "Enter id"));
+				int level = Integer.parseInt(JOptionPane.showInputDialog(f, "Ente case"));
+				String rank = SimpleDB.getRank(id,level);
+				JOptionPane.showMessageDialog(f,rank);
+
+
+
+
+			}
+			else if (e.getActionCommand().equals("My Level is:")){
+				JFrame f;
+				f = new JFrame();
+				int id = Integer.parseInt(JOptionPane.showInputDialog(f, "Enter id"));
+				String rank = SimpleDB.getLevel(id);
+				JOptionPane.showMessageDialog(f,rank);
+
+
+
 
 			}
 			else if (e.getActionCommand().equals("del E")) {
