@@ -17,7 +17,7 @@ public class SimpleDB {
 		public static final String jdbcUrl = "jdbc:mysql://db-mysql-ams3-67328-do-user-4468260-0.db.ondigitalocean.com:25060/oop?useUnicode=yes&characterEncoding=UTF-8&useSSL=false";
 		public static final String jdbcUser = "student";
 		public static final String jdbcUserPassword = "OOP2020student";
-	//	private static String jdbcAdmin = "doadmin";
+		//private static String jdbcAdmin = "doadmin";
 		//private static String jdbcAdminPassword = "guvvx0m0g955vix3";
 		private static int[][] results = {{0, 145, 290}, {1, 450, 580}, {3, 750, 580}, {5, 570, 500}, {9, 510, 580}, {11, 1050, 580}, {13, 310, 580}, {16, 235, 290}, {19, 250, 580}, {20, 200, 290}, {23, 1000, 1140}};
 
@@ -29,7 +29,7 @@ public class SimpleDB {
 		public static void main(String[] args) {
 			//System.out.println(getRank(315149500, 0));
 			//System.out.println(allId(0));
-		//writeRes(0,0,124,5);
+//		writeRes(0,0,124,5);
 //		System.out.println(getLevel(315149500));
 //			int id1 = 315149500;  // "dummy existing ID
 //			int level = 0;
@@ -118,6 +118,7 @@ public class SimpleDB {
 			}
 			return ans;
 		}
+
 //		static boolean writeRes(int id, int level, int moves, int grade) {
 //			boolean ans = false;
 //			long now = (new Date()).getTime();
