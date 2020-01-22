@@ -41,12 +41,14 @@ public class Fruits {
                 Fruit fruit = new Fruit(value,position,type,i);
                 i++;
                 myFrit.add(fruit);
+                fruit.setMyEdge(getEdge(fruit.getId()));
             }catch (Exception e){
                 throw new RuntimeException(e);
 
             }
         }
     }
+
 
     /**
      * return collection of the fruit in the game

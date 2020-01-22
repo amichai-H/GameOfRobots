@@ -131,13 +131,13 @@ public class SimpleGameClient {
 					}
 					if (scenario_num == 23){
 						if (a==0){
-							src_node =  38;
+							src_node =  13;
 						}
 						else if(a==1){
-							src_node = 1;
+							src_node = 19;
 						}
 						else {
-							src_node = 18;
+							src_node = 40;
 						}
 					}
 //					if (scenario_num==20) {
@@ -167,7 +167,7 @@ public class SimpleGameClient {
 				Fruits fruits = new Fruits(game, gg);
 
 				while (game.isRunning()) {
-					if (l-game.timeToEnd()>56L) {
+					if (l-game.timeToEnd()>52L) {
                         kmlForGame.writeMyRnF(gg, game);
                         l = game.timeToEnd();
 
@@ -283,11 +283,11 @@ public class SimpleGameClient {
 //									}
 //								}
 								if (scenario_num == 23){
-									dest = nextNode(gg, src, fruits);
+									dest = getAtAREA(gg,0,13,src,fruits);
 
 
 								}
-								if (speed>3){
+								if (speed>3&&scenario_num!=23){
 									dest = getMinf(gg, src,fruits,3);
 
 								}
@@ -302,7 +302,11 @@ public class SimpleGameClient {
 								else if (scenario_num==22||scenario_num==16||scenario_num==23) {
 //									dest = goCloser(gg, src, rid, game, fruits, true);
 									//dest = nextNode(gg, src, fruits);
-									dest = getFF(gg,src,fruits,3);
+									dest = getAtAREA(gg,16,32,src,fruits);
+									if (game.timeToEnd()<5000){
+										dest = getFF(gg,src,fruits,1);
+									}
+
 
 
 
@@ -330,11 +334,13 @@ public class SimpleGameClient {
 								//dest = goCloser(gg, src, rid, game,fruits,false);
 //								dest = getMinf(gg, src,fruits);
 								//dest = getFF(gg,src,fruits,2);
-								dest = getMinf(gg, src,fruits,5);
+//								dest = getMinf(gg, src,fruits,5);
+								dest = getAtAREA(gg,23,50,src,fruits);
 
 
 
-								if (speed>2)
+
+								if (speed>2&& scenario_num != 23)
 								dest = getMinf(gg, src,fruits,0);
 //								dest = goCloser(gg, src, rid, game,fruits,true);
 
@@ -542,6 +548,19 @@ public class SimpleGameClient {
 		else return algo.shortestPath(src,dde.getDest()).get(1).getKey();
 		return -1;
 
+	}
+	private static int getAtAREA(graph g,int rX,int rY,int src,Fruits fruits){
+		for (Iterator<Fruit> it = fruits.iterator(); it.hasNext(); ) {
+			Fruit fruit = it.next();
+			 if (fruit.inRange(rX,rY)) {
+				 return getFF(g, src, fruits, fruit.getId());
+			 }
+			 if (fruit.getMyEdge().getDest()==21||fruit.getMyEdge().getSrc()==21){
+
+			 }
+
+		}
+		return -1;
 	}
 
 }
