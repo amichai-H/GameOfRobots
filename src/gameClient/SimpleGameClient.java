@@ -70,9 +70,7 @@ public class SimpleGameClient {
 	 */
 	private static void theGame() {
 		JFrame f = new JFrame();
-        int id = 315149500;
-//        int id = 316316249;
-        Game_Server.login(id);
+		connect();
 		KmlForGame kmlForGame = new KmlForGame();
 		try {
 			auto =  JOptionPane.showConfirmDialog(f, "Do you want auto game?", "Start Game",
@@ -212,6 +210,26 @@ public class SimpleGameClient {
 				e.printStackTrace();
 			}
 			//exit(0);
+	}
+
+	/**
+	 * ask the player if he want to connect
+	 */
+	private static void connect() {
+		JFrame f = new JFrame();
+		try {
+			if(  JOptionPane.showConfirmDialog(f, "Do you want to connect the server?", "Start Game",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+				int id = Integer.parseInt(JOptionPane.showInputDialog(f, "Pls enter ID "));
+				   Game_Server.login(id);
+
+
+
+			}
+		} catch (Exception e){
+			JOptionPane.showMessageDialog(f, "something went wrong I'il continue now.. ");
+		}
+
 	}
 
 	/**

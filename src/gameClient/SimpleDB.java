@@ -29,7 +29,6 @@ public class SimpleDB {
 		public static void main(String[] args) {
 			System.out.println(getRank(315149500, 0));
 			//System.out.println(allId(0));
-//		writeRes(0,0,124,5);
 //		System.out.println(getLevel(315149500));
 //			int id1 = 315149500;  // "dummy existing ID
 //			int level = 0;
@@ -94,52 +93,20 @@ public class SimpleDB {
 			return ans;
 		}
 
-		public static int allUsers() {
-			int ans = 0;
-			String allCustomersQuery = "SELECT * FROM Users;";
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				Connection connection =
-						DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcUserPassword);
-				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(allCustomersQuery);
-				while (resultSet.next()) {
-					System.out.println("Id: " + resultSet.getInt("UserID"));
-					ans++;
-				}
-				resultSet.close();
-				statement.close();
-				connection.close();
-			} catch (SQLException sqle) {
-				System.out.println("SQLException: " + sqle.getMessage());
-				System.out.println("Vendor Error: " + sqle.getErrorCode());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			return ans;
-		}
 
-//		static boolean writeRes(int id, int level, int moves, int grade) {
-//			boolean ans = false;
-//			long now = (new Date()).getTime();
-//			String query = " insert into Logs (UserID, LevelID, time, moves, score) values (" + id + ", " + level + ", CURRENT_TIMESTAMP," + moves + " , " + grade + ")";
-//
-//			try {
-//				Class.forName("com.mysql.jdbc.Driver");
-//				Connection connection = DriverManager.getConnection(jdbcUrl, jdbcAdmin, jdbcAdminPassword);
-//				Statement statement = connection.createStatement();
-//				statement.executeUpdate(query);
-//			} catch (SQLException var10) {
-//				System.out.println("SQLException: " + var10.getMessage());
-//				System.out.println("Vendor Error: " + var10.getErrorCode());
-//			} catch (ClassNotFoundException var11) {
-//				var11.printStackTrace();
-//			}
-//
-//			return ans;
-//		}
+		/**
+		 *
+		 * @param id - of the player
+		 * @param level - that we check
+		 * @return string to show
+		 */
 
 		public static String getRank(int id, int level) {
+			if (level==10){
+				return "maybe you mean 11?";
+			}
+			if (level==11)
+				level=10;
 			HashMap<Integer, Boolean> myHash = new HashMap<>();
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
@@ -167,7 +134,7 @@ public class SimpleDB {
 				}
 				return "Rank of ID - "+id+" is: " + myF + " From  " + count + " " + myscore;
 			} catch (Exception e) {
-				return e.toString();
+				return "enter only case beatween 0 to 11 and not 10(pdf is confusing";
 			}
 
 			//return null;
@@ -235,6 +202,12 @@ public class SimpleDB {
 			return null;
 
 		}
+
+		/**
+		 * return counter of games
+		 * @param id - of the player
+		 * @return
+		 */
 
 		public static String getCounter(int id) {
 			try {
