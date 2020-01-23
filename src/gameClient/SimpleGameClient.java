@@ -1,12 +1,5 @@
 package gameClient;
 
-import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -15,19 +8,15 @@ import Arena.Fruits;
 import Arena.Robot;
 import Arena.Robots;
 import algorithms.Graph_Algo;
-import algorithms.graph_algorithms;
 import dataStructure.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import Server.Game_Server;
 import Server.game_service;
-import oop_dataStructure.OOP_DGraph;
-import oop_dataStructure.oop_edge_data;
-import oop_dataStructure.oop_graph;
+
 import utils.KmlForGame;
 import utils.Point3D;
-import utils.Range;
 import utils.StdDraw;
 
 import javax.swing.*;
@@ -54,7 +43,6 @@ import static java.lang.System.*;
 public class SimpleGameClient {
 	private static Queue<Integer>[] myway = new ArrayDeque[5];
 	private static boolean auto = false;
-	private static HashMap<Double,Integer> myFruitShare = new HashMap<>();
 	static long time;
 	private static int scenario_num = -1;
 
@@ -239,7 +227,6 @@ public class SimpleGameClient {
 	 * @return src to start on the graph
 	 */
 	private static int findStart(DGraph gg, game_service game) {
-		//Graph_Algo graph_algo = new Graph_Algo(gg);
 		Fruits fruts = new Fruits(game, gg);
 		Fruit max = fruts.getMaxValue();
 		edge_data eData = fruts.getEdge(max.getId());
@@ -303,19 +290,13 @@ public class SimpleGameClient {
 //								}
 								if (scenario_num == 23){
 									dest = getAtAREA(gg,0,13,src,fruits);
-
-
 								}
 								if (speed>3&&scenario_num!=23){
 								//	dest = getMinf(gg, src,fruits,3);
 									//dest = nextNode(gg, src, fruits);
 									dest = goCloser(gg, src, rid, game,fruits,b);
-
-
-
 								}
 							}
-
 							if (rid==1) {
 								if (scenario_num!=22&&scenario_num!=23&&scenario_num!=16) {
 //								dest = getMinf(gg, src, rid, game,fruits);
@@ -329,57 +310,39 @@ public class SimpleGameClient {
 									if (game.timeToEnd()<5000){
 										dest = getFF(gg,src,fruits,1);
 									}
-
-
-
-
 //								dest = goCloser(gg, src, rid, game,fruits,true);
 //									dest = getFF(gg,src,fruits,1);
 								}
                                 else {
                                     dest = getFF(gg,src,fruits,3);
-
                                 }
-
 							}
 //							if ((dest == -1 ||speed > 3)&&log.size()!=1){
-//
 //								dest = nextNode(gg, src, rid, game,fruits);
 //							}
 							if ((dest == -1 && rid != 2 )) {
 //								dest = nextNode(gg, src, fruits);
 								dest = getMinf(gg, src,fruits,2);
-
 //								dest = goCloser(gg, src, rid, game,fruits,true);
-
 							}
 							if (dest==-1){
 								//dest = goCloser(gg, src, rid, game,fruits,false);
 //								dest = getMinf(gg, src,fruits);
 								//dest = getFF(gg,src,fruits,2);
-//								dest = getMinf(gg, src,fruits,5);
 								dest = getAtAREA(gg,23,50,src,fruits);
-
-
-
-
-								if (speed>2&& scenario_num != 23)
-								dest = getMinf(gg, src,fruits,0);
-//								dest = goCloser(gg, src, rid, game,fruits,true);
-
-
+								if (speed>2&& scenario_num != 23) {
+									dest = getMinf(gg, src, fruits, 0);
+									//dest = goCloser(gg, src, rid, game,fruits,true);
+								}
 							}
 
 
 							if (dest == -1) {
-								//dest = randomedge(gg, src, rid);
+								dest = randomedge(gg, src, rid);
 							}
 						} else {
 							dest = nextNode(gg, src,null);
 						}
-						game.chooseNextEdge(rid, dest);
-						//System.out.println("Turn to node: " + dest + "  time to end:" + (t / 1000));
-						//System.out.println(ttt);
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -444,16 +407,6 @@ public class SimpleGameClient {
 	 */
 
 	private static int randomedge(graph g, int src, int rid) {
-//		int ans = -1;
-//		Collection<edge_data> ee = g.getE(src);
-//		Iterator<edge_data> itr = ee.iterator();
-//		int s = ee.size();
-//		int r = (int)(Math.random()*s);
-//		int i=0;
-//		while(i<r) {itr.next();i++;}
-//		ans = itr.next().getDest();
-//		return ans;
-		int ans = -1;
 		Graph_Algo graph_algo = new Graph_Algo(g);
 
 		Iterator<node_data> temp = g.getV().iterator();
@@ -472,7 +425,6 @@ public class SimpleGameClient {
 		if (myway[rid] == null || myway[rid].isEmpty()) {
 			return -1;
 		}
-		ans = myway[rid].poll();
 		try {
 			return graph_algo.shortestPath(src, showChoices.get(r)).get(1).getKey();
 		} catch (Exception e) {
