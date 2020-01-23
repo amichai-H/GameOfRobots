@@ -71,6 +71,7 @@ public class SimpleGameClient {
 	private static void theGame() {
 		JFrame f = new JFrame();
         int id = 315149500;
+//        int id = 316316249;
         Game_Server.login(id);
 		KmlForGame kmlForGame = new KmlForGame();
 		try {
@@ -123,11 +124,11 @@ public class SimpleGameClient {
 					if (a==1&& scenario_num == 13)
 						src_node = 40;
 					if (scenario_num==16||scenario_num==23) {
-						if (a == 0) {
+						if (a == 1) {
 							src_node = 10;
 						}
 						else
-							src_node = 40;
+							src_node = 39;
 					}
 					if (scenario_num == 23){
 						if (a==0){
@@ -167,7 +168,7 @@ public class SimpleGameClient {
 				Fruits fruits = new Fruits(game, gg);
 
 				while (game.isRunning()) {
-					if (l-game.timeToEnd()>52L) {
+					if (l-game.timeToEnd()>119L) {
                         kmlForGame.writeMyRnF(gg, game);
                         l = game.timeToEnd();
 
@@ -265,9 +266,9 @@ public class SimpleGameClient {
 							Robots list = new Robots(game,gg);
 							if (rid==0) {
 								boolean b = scenario_num ==19;
-								//dest = goCloser(gg, src, rid, game,fruits,b);
+								dest = goCloser(gg, src, rid, game,fruits,b);
 //								if (list.collection().size()<3 && speed<4){
-								dest = nextNode(gg, src, fruits);
+//								dest = nextNode(gg, src, fruits);
 
 //								}
 //								else if (speed==1){
@@ -288,7 +289,11 @@ public class SimpleGameClient {
 
 								}
 								if (speed>3&&scenario_num!=23){
-									dest = getMinf(gg, src,fruits,3);
+								//	dest = getMinf(gg, src,fruits,3);
+									//dest = nextNode(gg, src, fruits);
+									dest = goCloser(gg, src, rid, game,fruits,b);
+
+
 
 								}
 							}
@@ -549,16 +554,22 @@ public class SimpleGameClient {
 		return -1;
 
 	}
+
+	/**
+	 * this method solve level 23 by separate the fruits between the robots by area.
+	 * @param g - map
+	 * @param rX - min key node
+	 * @param rY - max key node
+	 * @param src - src of the robot
+	 * @param fruits - all the fruits
+	 * @return int (next node to the root)
+	 */
 	private static int getAtAREA(graph g,int rX,int rY,int src,Fruits fruits){
 		for (Iterator<Fruit> it = fruits.iterator(); it.hasNext(); ) {
 			Fruit fruit = it.next();
 			 if (fruit.inRange(rX,rY)) {
 				 return getFF(g, src, fruits, fruit.getId());
 			 }
-			 if (fruit.getMyEdge().getDest()==21||fruit.getMyEdge().getSrc()==21){
-
-			 }
-
 		}
 		return -1;
 	}

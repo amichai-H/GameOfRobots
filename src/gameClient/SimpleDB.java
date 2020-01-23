@@ -27,7 +27,7 @@ public class SimpleDB {
 		 * @param args
 		 */
 		public static void main(String[] args) {
-			//System.out.println(getRank(315149500, 0));
+			System.out.println(getRank(315149500, 0));
 			//System.out.println(allId(0));
 //		writeRes(0,0,124,5);
 //		System.out.println(getLevel(315149500));

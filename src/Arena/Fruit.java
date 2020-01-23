@@ -27,12 +27,29 @@ public class Fruit {
         this.id = id;
     }
 
+    /**
+     *
+     * @return the edge of the fruit
+     */
+
     public edge_data getMyEdge() {
         return myEdge;
     }
+
+    /**
+     * if the fruit is in the range of the parameter the method return true
+     * @param rx - min key node
+     * @param ry - max key node
+     * @return boolean (true / false)
+     */
     public boolean inRange(int rx,int ry){
         return (myEdge.getSrc()>rx && myEdge.getSrc()<ry)||(myEdge.getDest()>rx && myEdge.getDest()<ry);
     }
+
+    /**
+     *
+     * @param myEdge - edata that the fruit is on
+     */
 
     public void setMyEdge(edge_data myEdge) {
         this.myEdge = myEdge;
